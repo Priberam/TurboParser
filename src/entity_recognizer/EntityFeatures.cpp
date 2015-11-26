@@ -24,10 +24,13 @@
 
 void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
                                         int position) {
-  CHECK(!input_features_unigrams_[position]);
+  CHECK(!input_features_cacheable_unigrams_[position]);
+  CHECK(!input_features_non_cacheable_unigrams_[position]);
 
-  BinaryFeatures *features = new BinaryFeatures;
-  input_features_unigrams_[position] = features;
+  BinaryFeatures *cacheable_features = new BinaryFeatures;
+  BinaryFeatures *non_cacheable_features = new BinaryFeatures;
+  input_features_cacheable_unigrams_[position] = cacheable_features;
+  input_features_non_cacheable_unigrams_[position] = non_cacheable_features;
 
   int sentence_length = sentence->size();
 
@@ -76,13 +79,13 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   // POS tags.
   uint8_t PID = (*pos_ids)[position]; // Current POS.
   // POS on the left.
-  uint8_t pPID = (position > 0) ? 
+  uint8_t pPID = (position > 0) ?
     (*pos_ids)[position - 1] : TOKEN_START;
   // POS on the right.
   uint8_t nPID = (position < sentence_length - 1) ?
     (*pos_ids)[position + 1] : TOKEN_STOP;
   // POS two positions on the left.
-  uint8_t ppPID = (position > 1) ? 
+  uint8_t ppPID = (position > 1) ?
     (*pos_ids)[position - 2] : TOKEN_START;
   // POS two positions on the right.
   uint8_t nnPID = (position < sentence_length - 2) ?
@@ -137,118 +140,142 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS, flags);
-  AddFeature(fkey, features);
+  AddFeature(fkey, cacheable_features);
 
   // Lexical features.
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::W, 
+  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::W,
                                flags, WID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pW, 
+  AddFeature(fkey, cacheable_features);
+  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pW,
                                flags, pWID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nW, 
+  AddFeature(fkey, non_cacheable_features);
+  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nW,
                                flags, nWID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppW, 
+  AddFeature(fkey, non_cacheable_features);
+  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppW,
                                flags, ppWID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnW, 
+  AddFeature(fkey, non_cacheable_features);
+  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnW,
                                flags, nnWID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
 
   // Gazetteer features.
   for (int k = 0; k < GIDs.size(); ++k) {
     uint16_t GID = GIDs[k];
-    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::G, 
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::G,
                                  flags, GID);
-    AddFeature(fkey, features);
+    if (!FLAGS_form_case_sensitive) {
+      AddFeature(fkey, non_cacheable_features);
+    } else {
+      AddFeature(fkey, cacheable_features);
+    }
   }
   for (int k = 0; k < pGIDs.size(); ++k) {
     uint16_t pGID = pGIDs[k];
-    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pG, 
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pG,
                                  flags, pGID);
-    AddFeature(fkey, features);
+    AddFeature(fkey, non_cacheable_features);
   }
   for (int k = 0; k < nGIDs.size(); ++k) {
     uint16_t nGID = nGIDs[k];
-    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nG, 
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nG,
                                  flags, nGID);
-    AddFeature(fkey, features);
+    AddFeature(fkey, non_cacheable_features);
   }
   for (int k = 0; k < ppGIDs.size(); ++k) {
     uint16_t ppGID = ppGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppG,
                                  flags, ppGID);
-    AddFeature(fkey, features);
+    AddFeature(fkey, non_cacheable_features);
   }
   for (int k = 0; k < nnGIDs.size(); ++k) {
     uint16_t nnGID = nnGIDs[k];
-    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnG, 
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnG,
                                  flags, nnGID);
-    AddFeature(fkey, features);
+    AddFeature(fkey, non_cacheable_features);
   }
 
   // POS features.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::P,
                                flags, PID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PpP,
                                 flags, PID, pPID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PnP,
                                 flags, PID, nPID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PpPppP,
                                  flags, PID, pPID, ppPID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PnPnnP,
                                  flags, PID, nPID, nnPID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
 
   // Shape features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::S,
                                flags, SID);
-  AddFeature(fkey, features);
+  if (!FLAGS_form_case_sensitive) {
+    AddFeature(fkey, non_cacheable_features);
+  } else {
+    AddFeature(fkey, cacheable_features);
+  }
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pS,
                                flags, pSID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nS,
                                flags, nSID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppS,
                                flags, ppSID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnS,
                                flags, nnSID);
-  AddFeature(fkey, features);
+  AddFeature(fkey, non_cacheable_features);
 
   // Prefix/Suffix features.
   for (int l = 0; l < AID.size(); ++l) {
     uint8_t flag_prefix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::A,
                                   flags, AID[l], flag_prefix_length);
-    AddFeature(fkey, features);
+    AddFeature(fkey, cacheable_features);
   }
   for (int l = 0; l < ZID.size(); ++l) {
     uint8_t flag_suffix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::Z,
                                   flags, ZID[l], flag_suffix_length);
-    AddFeature(fkey, features);
+    AddFeature(fkey, cacheable_features);
   }
 
   // Several flags.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits);
-  AddFeature(fkey, features);
+  if (!FLAGS_form_case_sensitive) {
+    AddFeature(fkey, non_cacheable_features);
+  } else {
+    AddFeature(fkey, cacheable_features);
+  }
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits_with_punctuation);
-  AddFeature(fkey, features);
+  if (!FLAGS_form_case_sensitive) {
+    AddFeature(fkey, non_cacheable_features);
+  } else {
+    AddFeature(fkey, cacheable_features);
+  }
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_upper);
-  AddFeature(fkey, features);
+  if (!FLAGS_form_case_sensitive) {
+    AddFeature(fkey, non_cacheable_features);
+  } else {
+    AddFeature(fkey, cacheable_features);
+  }
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_first_upper);
-  AddFeature(fkey, features);
+  if (!FLAGS_form_case_sensitive) {
+    AddFeature(fkey, non_cacheable_features);
+  } else {
+    AddFeature(fkey, cacheable_features);
+  }
 }
 
 void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
@@ -275,7 +302,7 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   EntityOptions *options = static_cast<class EntityPipe*>(pipe_)->
     GetEntityOptions();
   std::bitset<32> *feature_set_bitmap;
-  feature_set_bitmap = new bitset<32>(options->large_feature_set());
+  feature_set_bitmap = new std::bitset<32>(options->large_feature_set());
 
   // Array of form IDs.
   const vector<int>* word_ids = &entity_sentence->GetFormIds();
@@ -292,7 +319,7 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
     pWID = (position > 0) ?
       (*word_ids)[position - 1] : TOKEN_START;
     // Word on the right.
-   nWID = (position < sentence_length - 1) ?
+    nWID = (position < sentence_length - 1) ?
       (*word_ids)[position + 1] : TOKEN_STOP;
     // Word two positions on the left.
     ppWID = (position > 1) ?
@@ -321,11 +348,10 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
       (*pos_ids)[position + 2] : TOKEN_STOP;
   }
 
-
   // Word shapes.
   uint16_t SID, pSID, nSID, ppSID, nnSID;
   if (feature_set_bitmap->test(2)) {
-    SID = (position < sentence_length) ? 
+    SID = (position < sentence_length) ?
       sentence->GetShapeId(position) : TOKEN_STOP; // Current shape.
      // Shape on the left.
     pSID = (position > 0) ?
@@ -388,20 +414,20 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
 
   // Shape features.
   if (feature_set_bitmap->test(2)) {
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::S,
-                               flags, SID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pS,
-                               flags, pSID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nS,
-                               flags, nSID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppS,
-                               flags, ppSID);
-  AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnS,
-                               flags, nnSID);
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::S,
+                                 flags, SID);
+    AddFeature(fkey, features);
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pS,
+                                 flags, pSID);
+    AddFeature(fkey, features);
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nS,
+                                 flags, nSID);
+    AddFeature(fkey, features);
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppS,
+                                 flags, ppSID);
+    AddFeature(fkey, features);
+    fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnS,
+                                 flags, nnSID);
   }
 }
 
