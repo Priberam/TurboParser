@@ -19,14 +19,13 @@
 #include "EntityPipe.h"
 #include "EntityFeatures.h"
 #include "SequencePart.h"
-#include "EntityFeatureTemplates.h"
 #include <bitset>
 
-void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
+void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
                                         int position) {
   CHECK(!input_features_unigrams_[position]);
 
-  BinaryFeatures *features = new BinaryFeatures;
+  MultiBinaryFeatures *features = new MultiBinaryFeatures;
   input_features_unigrams_[position] = features;
 
   int sentence_length = sentence->size();
@@ -130,132 +129,173 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   uint64_t fkey;
   uint8_t flags = 0x0;
 
-  flags |= EntityFeatureTemplateParts::UNIGRAM;
-
   // Maximum is 255 feature templates.
   CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 256);
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS, flags);
-  AddFeature(fkey, features);
+  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS,
+                                  flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::BIAS);
 
   // Lexical features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::W,
-                               flags, WID);
-  AddFeature(fkey, features);
+                               WID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::W);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pW,
-                               flags, pWID);
-  AddFeature(fkey, features);
+                               pWID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::pW);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nW,
-                               flags, nWID);
-  AddFeature(fkey, features);
+                               nWID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nW);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppW,
-                               flags, ppWID);
-  AddFeature(fkey, features);
+                               ppWID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::ppW);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnW,
-                               flags, nnWID);
-  AddFeature(fkey, features);
+                               nnWID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nnW);
 
   // Gazetteer features.
   for (int k = 0; k < GIDs.size(); ++k) {
     uint16_t GID = GIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::G,
-                                 flags, GID);
-    AddFeature(fkey, features);
+                                 GID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::G);
   }
   for (int k = 0; k < pGIDs.size(); ++k) {
     uint16_t pGID = pGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pG,
-                                 flags, pGID);
-    AddFeature(fkey, features);
+                                 pGID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::pG);
   }
   for (int k = 0; k < nGIDs.size(); ++k) {
     uint16_t nGID = nGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nG,
-                                 flags, nGID);
-    AddFeature(fkey, features);
+                                 nGID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::nG);
   }
   for (int k = 0; k < ppGIDs.size(); ++k) {
     uint16_t ppGID = ppGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppG,
-                                 flags, ppGID);
-    AddFeature(fkey, features);
+                                 ppGID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::ppG);
   }
   for (int k = 0; k < nnGIDs.size(); ++k) {
     uint16_t nnGID = nnGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnG,
-                                 flags, nnGID);
-    AddFeature(fkey, features);
+                                 nnGID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::nnG);
   }
 
   // POS features.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::P,
-                               flags, PID);
-  AddFeature(fkey, features);
+                               PID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::P);
+
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PpP,
-                                flags, PID, pPID);
-  AddFeature(fkey, features);
+                                PID, pPID,
+                                flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::PpP);
+
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PnP,
-                                flags, PID, nPID);
-  AddFeature(fkey, features);
+                                PID, nPID,
+                                flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::PnP);
+
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PpPppP,
-                                 flags, PID, pPID, ppPID);
-  AddFeature(fkey, features);
+                                 PID, pPID, ppPID,
+                                 flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::PpPppP);
+
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PnPnnP,
-                                 flags, PID, nPID, nnPID);
-  AddFeature(fkey, features);
+                                 PID, nPID, nnPID,
+                                 flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::PnPnnP);
 
   // Shape features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::S,
-                               flags, SID);
-  AddFeature(fkey, features);
+                               SID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::S);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pS,
-                               flags, pSID);
-  AddFeature(fkey, features);
+                               pSID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::pS);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nS,
-                               flags, nSID);
-  AddFeature(fkey, features);
+                               nSID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nS);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppS,
-                               flags, ppSID);
-  AddFeature(fkey, features);
+                               ppSID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::ppS);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnS,
-                               flags, nnSID);
-  AddFeature(fkey, features);
+                               nnSID,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nnS);
 
   // Prefix/Suffix features.
   for (int l = 0; l < AID.size(); ++l) {
     uint8_t flag_prefix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::A,
-                                  flags, AID[l], flag_prefix_length);
-    AddFeature(fkey, features);
+                                  AID[l], flag_prefix_length,
+                                  flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::A);
   }
   for (int l = 0; l < ZID.size(); ++l) {
     uint8_t flag_suffix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::Z,
-                                  flags, ZID[l], flag_suffix_length);
-    AddFeature(fkey, features);
+                                  ZID[l], flag_suffix_length,
+                                  flags);
+    AddFeature(fkey, features, EntityFeatureTemplateUnigram::Z);
   }
 
   // Several flags.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
-                               flags, flag_all_digits);
-  AddFeature(fkey, features);
+                               flag_all_digits,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
-                               flags, flag_all_digits_with_punctuation);
-  AddFeature(fkey, features);
+                               flag_all_digits_with_punctuation,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
-                               flags, flag_all_upper);
-  AddFeature(fkey, features);
+                               flag_all_upper,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
-                               flags, flag_first_upper);
-  AddFeature(fkey, features);
+                               flag_first_upper,
+                               flags);
+  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
 }
 
-void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
+void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                        int position) {
   CHECK(!input_features_bigrams_[position]) << position
     << " " << sentence->size();
-  BinaryFeatures *features = new BinaryFeatures;
+
+  MultiBinaryFeatures *features = new MultiBinaryFeatures;
   input_features_bigrams_[position] = features;
 
   uint64_t fkey;
@@ -344,78 +384,115 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   CHECK_LT(EntityFeatureTemplateBigram::COUNT, 256);
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS, flags);
-  AddFeature(fkey, features);
+  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS,
+                                  flags);
+  AddFeature(fkey, features, EntityFeatureTemplateBigram::BIAS);
 
   // Lexical features.
   if (feature_set_bitmap->test(0)) {
+    //Word
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::W,
-                                 flags, WID);
-    AddFeature(fkey, features);
+                                 WID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::W);
+    //pContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pW,
-                                 flags, pWID);
-    AddFeature(fkey, features);
+                                 pWID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::pW);
+    //nContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nW,
-                                 flags, nWID);
-    AddFeature(fkey, features);
+                                 nWID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::nW);
+    //ppContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppW,
-                                 flags, ppWID);
-    AddFeature(fkey, features);
+                                 ppWID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::ppW);
+    //nnContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnW,
-                                 flags, nnWID);
-    AddFeature(fkey, features);
+                                 nnWID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::nnW);
   }
 
   // POS features.
   if (feature_set_bitmap->test(1)) {
+    //Word
     fkey = encoder_.CreateFKey_P(EntityFeatureTemplateBigram::P,
-                                 flags, PID);
-    AddFeature(fkey, features);
+                                 PID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::P);
+    //pContext
     fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateBigram::PpP,
-                                  flags, PID, pPID);
-    AddFeature(fkey, features);
+                                  PID, pPID,
+                                  flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::PpP);
+    //nContext
     fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateBigram::PnP,
-                                  flags, PID, nPID);
-    AddFeature(fkey, features);
+                                  PID, nPID,
+                                  flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::PnP);
+    //ppContext
     fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateBigram::PpPppP,
-                                   flags, PID, pPID, ppPID);
-    AddFeature(fkey, features);
+                                   PID, pPID, ppPID,
+                                   flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::PpPppP);
+    //nnContext
     fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateBigram::PnPnnP,
-                                   flags, PID, nPID, nnPID);
-    AddFeature(fkey, features);
+                                   PID, nPID, nnPID,
+                                   flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::PnPnnP);
   }
 
   // Shape features.
   if (feature_set_bitmap->test(2)) {
+    //Word
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::S,
-                                 flags, SID);
-    AddFeature(fkey, features);
+                                 SID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::S);
+    //pContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pS,
-                                 flags, pSID);
-    AddFeature(fkey, features);
+                                 pSID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::pS);
+    //nContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nS,
-                                 flags, nSID);
-    AddFeature(fkey, features);
+                                 nSID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::nS);
+    //ppContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppS,
-                                 flags, ppSID);
-    AddFeature(fkey, features);
+                                 ppSID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::ppS);
+    //nnContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnS,
-                                 flags, nnSID);
+                                 nnSID,
+                                 flags);
+    AddFeature(fkey, features, EntityFeatureTemplateBigram::nnS);
   }
 }
 
-void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
+void EntityFeatures::AddTrigramFeatures(EntityInstanceNumeric *sentence,
                                         int position) {
   CHECK(!input_features_trigrams_[position]) << position
     << " " << sentence->size();
-  BinaryFeatures *features = new BinaryFeatures;
+  MultiBinaryFeatures *features = new MultiBinaryFeatures;
   input_features_trigrams_[position] = features;
 
   uint64_t fkey;
   uint8_t flags = 0x0;
   flags |= EntityFeatureTemplateParts::TRIGRAM;
 
+
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 256);
+
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS, flags);
-  AddFeature(fkey, features);
+  fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS,
+                                  flags);
+  AddFeature(fkey, features, EntityFeatureTemplateTrigram::BIAS);
 }

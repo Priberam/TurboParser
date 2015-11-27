@@ -27,6 +27,19 @@ struct EntityFeatureTemplateParts {
   };
 };
 
+//struct EntityFeatureFamiliesTemplate {
+//  enum types {
+//    None = 0, 
+//    Word,
+//    Gazetteer,
+//    POS,
+//    Suffix,
+//    Prefix,
+//    Shape,
+//    COUNT
+//  };
+//};
+
 struct EntityFeatureTemplateUnigram {
   enum types {
     BIAS = 0,   /* bias */                                            //WORD
@@ -56,11 +69,13 @@ struct EntityFeatureTemplateUnigram {
     FLAG,       /* flag indicating presence of special characters */  //WORD
     COUNT
   };
+  static const int size = EntityFeatureTemplateUnigram::COUNT;
 };
+
 
 struct EntityFeatureTemplateBigram {
   enum types {
-    BIAS = 0,   /* bias */
+    BIAS = EntityFeatureTemplateUnigram::COUNT,   /* bias */
     W,          /* word */
     pW,         /* word on the left */
     nW,         /* word on the right */
@@ -79,12 +94,16 @@ struct EntityFeatureTemplateBigram {
     nnS,        /* shape two positions on the right */
     COUNT
   };
+  static const  int size = EntityFeatureTemplateBigram::COUNT - EntityFeatureTemplateUnigram::COUNT;
 };
+
 
 struct EntityFeatureTemplateTrigram {
   enum types {
-    BIAS = 0,   /* bias */
+    BIAS = EntityFeatureTemplateBigram::COUNT,   /* bias */
+    COUNT
   };
+  static const  int size = EntityFeatureTemplateTrigram::COUNT - EntityFeatureTemplateBigram::COUNT;
 };
 
 #endif /* ENTITYFEATURETEMPLATES_H_ */
