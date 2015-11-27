@@ -231,17 +231,20 @@
     <ClCompile Include="..\..\src\entity_recognizer\EntityInstance.cpp" />
     <ClCompile Include="..\..\src\entity_recognizer\EntityInstanceNumeric.cpp" />
     <ClCompile Include="..\..\src\entity_recognizer\EntityOptions.cpp" />
+    <ClCompile Include="..\..\src\entity_recognizer\EntityParameters.cpp" />
     <ClCompile Include="..\..\src\entity_recognizer\EntityPipe.cpp" />
     <ClCompile Include="..\..\src\entity_recognizer\EntityReader.cpp" />
     <ClCompile Include="..\..\src\entity_recognizer\EntityWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\entity_recognizer\EntityDictionary.h" />
+    <ClInclude Include="..\..\src\entity_recognizer\EntityFeatureEncoder.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityFeatures.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityFeatureTemplates.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityInstance.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityInstanceNumeric.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityOptions.h" />
+    <ClInclude Include="..\..\src\entity_recognizer\EntityParameters.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityPipe.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityReader.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntitySpan.h" />
