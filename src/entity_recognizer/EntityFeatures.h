@@ -90,13 +90,16 @@ public:
 
 
     for (int i = 0; i < length; i++) {
+      input_features_unigrams_[i] = new MultiBinaryFeatures;
       input_features_unigrams_[i]->resize(EntityFeatureTemplateUnigram::size,
                                           static_cast<BinaryFeatures*>(NULL));
     }
     for (int i = 0; i < length + 1; i++) {
+      input_features_bigrams_[i] = new MultiBinaryFeatures;
       input_features_bigrams_[i]->resize(EntityFeatureTemplateBigram::size,
                                          static_cast<BinaryFeatures*>(NULL));
       // Make this optional?
+	  input_features_trigrams_[i] = new MultiBinaryFeatures;
       input_features_trigrams_[i]->resize(EntityFeatureTemplateTrigram::size,
                                           static_cast<BinaryFeatures*>(NULL));
     }
