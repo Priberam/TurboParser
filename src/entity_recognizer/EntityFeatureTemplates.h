@@ -29,7 +29,7 @@ struct EntityFeatureTemplateParts {
 
 //struct EntityFeatureFamiliesTemplate {
 //  enum types {
-//    None = 0, 
+//    None = 0,
 //    Word,
 //    Gazetteer,
 //    POS,
@@ -72,7 +72,6 @@ struct EntityFeatureTemplateUnigram {
   static const int size = EntityFeatureTemplateUnigram::COUNT;
 };
 
-
 struct EntityFeatureTemplateBigram {
   enum types {
     BIAS = EntityFeatureTemplateUnigram::COUNT,   /* bias */
@@ -96,7 +95,6 @@ struct EntityFeatureTemplateBigram {
   };
   static const  int size = EntityFeatureTemplateBigram::COUNT - EntityFeatureTemplateUnigram::COUNT;
 };
-
 
 struct EntityFeatureTemplateTrigram {
   enum types {

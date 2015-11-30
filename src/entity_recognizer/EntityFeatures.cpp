@@ -23,7 +23,6 @@
 
 void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
                                         int position) {
-  
   for (int i = 0; i < EntityFeatureTemplateUnigram::size; i++) {
     CHECK(!(GetUnigramMultiFeatures(position))[i]);
     BinaryFeatures *binary_features = new BinaryFeatures;
@@ -295,10 +294,9 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
 
 void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                        int position) {
-
   for (int i = 0; i < EntityFeatureTemplateBigram::size; i++) {
     CHECK(!(GetBigramMultiFeatures(position))[i]) << position
-    << " " << sentence->size();;
+      << " " << sentence->size();;
     BinaryFeatures *binary_features = new BinaryFeatures;
     (*(input_features_bigrams_[position]))[i] = binary_features;
   }
@@ -484,7 +482,6 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
 
 void EntityFeatures::AddTrigramFeatures(EntityInstanceNumeric *sentence,
                                         int position) {
-
   for (int i = 0; i < EntityFeatureTemplateTrigram::size; i++) {
     CHECK(!(GetTrigramMultiFeatures(position))[i]) << position
       << " " << sentence->size();
@@ -492,11 +489,10 @@ void EntityFeatures::AddTrigramFeatures(EntityInstanceNumeric *sentence,
     (*(input_features_trigrams_[position]))[i] = binary_features;
   }
   MultiBinaryFeatures *features = input_features_trigrams_[position];
-  
+
   uint64_t fkey;
   uint8_t flags = 0x0;
   flags |= EntityFeatureTemplateParts::TRIGRAM;
-
 
   // Maximum is 255 feature templates.
   CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 256);

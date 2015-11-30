@@ -19,7 +19,6 @@
 #ifndef ENTITY_PARAMETERS_H_
 #define ENTITY_PARAMETERS_H_
 
-
 #include "Parameters.h"
 #include "Features.h"
 #include "EntityFeatures.h"

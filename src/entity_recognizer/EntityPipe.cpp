@@ -38,11 +38,10 @@ void EntityPipe::PreprocessData() {
     CreateTagDictionary(GetSequenceReader());
 }
 
-
 void EntityPipe::ComputeScores(Instance *instance,
-                                 Parts *parts,
-                                 Features *features,
-                                 vector<double> *scores) {
+                               Parts *parts,
+                               Features *features,
+                               vector<double> *scores) {
   EntityInstanceNumeric *sentence =
     static_cast<EntityInstanceNumeric*>(instance);
   SequenceParts *sequence_parts = static_cast<SequenceParts*>(parts);
@@ -62,10 +61,10 @@ void EntityPipe::ComputeScores(Instance *instance,
       allowed_tags[k] = unigram->tag();
     }
 
-
-    const MultiBinaryFeatures &UnigramMultiFeatures = 
+    const MultiBinaryFeatures &UnigramMultiFeatures =
       entity_features->GetUnigramMultiFeatures(i);
-    for (int j; j < UnigramMultiFeatures.size(); j++) {
+    vector<double> multi_feature_sum_partial_tag_scores(index_unigram_parts.size());
+    for (int j = 0; j < UnigramMultiFeatures.size(); j++) {
       // Conjoin unigram features with the tag.
       const BinaryFeatures &unigram_features =
         entity_features->GetUnigramFeatures(UnigramMultiFeatures, j);
@@ -75,15 +74,19 @@ void EntityPipe::ComputeScores(Instance *instance,
                                       allowed_tags,
                                       &tag_scores);
       for (int k = 0; k < index_unigram_parts.size(); ++k) {
-        (*scores)[index_unigram_parts[k]] = tag_scores[k];
+        multi_feature_sum_partial_tag_scores[k] += tag_scores[k];
       }
+    }
+    for (int k = 0; k < index_unigram_parts.size(); ++k) {
+      (*scores)[index_unigram_parts[k]] = multi_feature_sum_partial_tag_scores[k];
     }
   }
 
   // Compute scores for the bigram parts.
   if (GetSequenceOptions()->markov_order() >= 1) {
     for (int i = 0; i < sentence->size() + 1; ++i) {
-      const vector<int> &index_bigram_parts = sequence_parts->FindBigramParts(i);
+      const vector<int> &index_bigram_parts =
+        sequence_parts->FindBigramParts(i);
       vector<int> bigram_tags(index_bigram_parts.size());
       for (int k = 0; k < index_bigram_parts.size(); ++k) {
         SequencePartBigram *bigram =
@@ -94,18 +97,22 @@ void EntityPipe::ComputeScores(Instance *instance,
 
       const MultiBinaryFeatures &BigramMultiFeatures =
         entity_features->GetBigramMultiFeatures(i);
-      for (int j; j < BigramMultiFeatures.size(); j++) {
+      vector<double> multi_feature_sum_partial_tag_scores(index_bigram_parts.size());
+      for (int j = 0; j < BigramMultiFeatures.size(); j++) {
         // Conjoin bigram features with the pair of tags.
         const BinaryFeatures &bigram_features =
-          entity_features->GetBigramFeatures(BigramMultiFeatures, i);
+          entity_features->GetBigramFeatures(BigramMultiFeatures, j);
 
         vector<double> tag_scores;
         parameters_->ComputeLabelScores(bigram_features,
                                         bigram_tags,
                                         &tag_scores);
         for (int k = 0; k < index_bigram_parts.size(); ++k) {
-          (*scores)[index_bigram_parts[k]] = tag_scores[k];
+          multi_feature_sum_partial_tag_scores[k] += tag_scores[k];
         }
+      }
+      for (int k = 0; k < index_bigram_parts.size(); ++k) {
+        (*scores)[index_bigram_parts[k]] = multi_feature_sum_partial_tag_scores[k];
       }
     }
   }
@@ -126,29 +133,33 @@ void EntityPipe::ComputeScores(Instance *instance,
 
       const MultiBinaryFeatures &TrigramMultiFeatures =
         entity_features->GetTrigramMultiFeatures(i);
-      for (int j; j < TrigramMultiFeatures.size(); j++) {
+      vector<double> multi_feature_sum_partial_tag_scores(index_trigram_parts.size());
+      for (int j = 0; j < TrigramMultiFeatures.size(); j++) {
         // Conjoin trigram features with the triple of tags.
         const BinaryFeatures &trigram_features =
-          entity_features->GetTrigramFeatures(TrigramMultiFeatures, i);
+          entity_features->GetTrigramFeatures(TrigramMultiFeatures, j);
 
         vector<double> tag_scores;
         parameters_->ComputeLabelScores(trigram_features,
                                         trigram_tags,
                                         &tag_scores);
         for (int k = 0; k < index_trigram_parts.size(); ++k) {
-          (*scores)[index_trigram_parts[k]] = tag_scores[k];
+          multi_feature_sum_partial_tag_scores[k] = tag_scores[k];
         }
+      }
+      for (int k = 0; k < index_trigram_parts.size(); ++k) {
+        (*scores)[index_trigram_parts[k]] = multi_feature_sum_partial_tag_scores[k];
       }
     }
   }
 }
 
 void EntityPipe::MakeGradientStep(Parts *parts,
-                                    Features *features,
-                                    double eta,
-                                    int iteration,
-                                    const vector<double> &gold_output,
-                                    const vector<double> &predicted_output) {
+                                  Features *features,
+                                  double eta,
+                                  int iteration,
+                                  const vector<double> &gold_output,
+                                  const vector<double> &predicted_output) {
   EntityFeatures *entity_features =
     static_cast<EntityFeatures*>(features);
   SequenceDictionary *sequence_dictionary = GetSequenceDictionary();
@@ -161,10 +172,9 @@ void EntityPipe::MakeGradientStep(Parts *parts,
       SequencePartUnigram *unigram =
         static_cast<SequencePartUnigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &UnigramMultiFeatures =
         entity_features->GetUnigramMultiFeatures(unigram->position());
-      for (int j; j < UnigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < UnigramMultiFeatures.size(); j++) {
         const BinaryFeatures &unigram_features =
           entity_features->GetUnigramFeatures(UnigramMultiFeatures, j);
 
@@ -176,10 +186,9 @@ void EntityPipe::MakeGradientStep(Parts *parts,
       SequencePartBigram *bigram =
         static_cast<SequencePartBigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &BigramMultiFeatures =
         entity_features->GetBigramMultiFeatures(bigram->position());
-      for (int j; j < BigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < BigramMultiFeatures.size(); j++) {
         const BinaryFeatures &bigram_features =
           entity_features->GetBigramFeatures(BigramMultiFeatures, j);
         int bigram_tag = sequence_dictionary->GetBigramLabel(bigram->tag_left(),
@@ -193,10 +202,9 @@ void EntityPipe::MakeGradientStep(Parts *parts,
       SequencePartTrigram *trigram =
         static_cast<SequencePartTrigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &TrigramMultiFeatures =
         entity_features->GetTrigramMultiFeatures(trigram->position());
-      for (int j; j < TrigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < TrigramMultiFeatures.size(); j++) {
         const BinaryFeatures &trigram_features =
           entity_features->GetTrigramFeatures(TrigramMultiFeatures, j);
         int trigram_tag =
@@ -214,12 +222,11 @@ void EntityPipe::MakeGradientStep(Parts *parts,
   }
 }
 
-
 void EntityPipe::MakeFeatureDifference(Parts *parts,
-                                         Features *features,
-                                         const vector<double> &gold_output,
-                                         const vector<double> &predicted_output,
-                                         FeatureVector *difference) {
+                                       Features *features,
+                                       const vector<double> &gold_output,
+                                       const vector<double> &predicted_output,
+                                       FeatureVector *difference) {
   EntityFeatures *entity_features =
     static_cast<EntityFeatures*>(features);
   SequenceDictionary *sequence_dictionary = GetSequenceDictionary();
@@ -231,10 +238,9 @@ void EntityPipe::MakeFeatureDifference(Parts *parts,
       SequencePartUnigram *unigram =
         static_cast<SequencePartUnigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &UnigramMultiFeatures =
         entity_features->GetUnigramMultiFeatures(unigram->position());
-      for (int j; j < UnigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < UnigramMultiFeatures.size(); j++) {
         const BinaryFeatures &unigram_features =
           entity_features->GetUnigramFeatures(UnigramMultiFeatures, j);
         for (int f = 0; f < unigram_features.size(); ++f) {
@@ -247,10 +253,9 @@ void EntityPipe::MakeFeatureDifference(Parts *parts,
       SequencePartBigram *bigram =
         static_cast<SequencePartBigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &BigramMultiFeatures =
         entity_features->GetBigramMultiFeatures(bigram->position());
-      for (int j; j < BigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < BigramMultiFeatures.size(); j++) {
         const BinaryFeatures &bigram_features =
           entity_features->GetBigramFeatures(BigramMultiFeatures, j);
         int bigram_tag = sequence_dictionary->GetBigramLabel(bigram->tag_left(),
@@ -265,10 +270,9 @@ void EntityPipe::MakeFeatureDifference(Parts *parts,
       SequencePartTrigram *trigram =
         static_cast<SequencePartTrigram*>((*parts)[r]);
 
-
       const MultiBinaryFeatures &TrigramMultiFeatures =
         entity_features->GetTrigramMultiFeatures(trigram->position());
-      for (int j; j < TrigramMultiFeatures.size(); j++) {
+      for (int j = 0; j < TrigramMultiFeatures.size(); j++) {
         const BinaryFeatures &trigram_features =
           entity_features->GetTrigramFeatures(TrigramMultiFeatures, j);
         int trigram_tag =
@@ -288,9 +292,9 @@ void EntityPipe::MakeFeatureDifference(Parts *parts,
 }
 
 void EntityPipe::MakeSelectedFeatures(Instance *instance,
-                                        Parts *parts,
-                                        const vector<bool> &selected_parts,
-                                        Features *features) {
+                                      Parts *parts,
+                                      const vector<bool> &selected_parts,
+                                      Features *features) {
   EntityInstanceNumeric *sentence =
     static_cast<EntityInstanceNumeric*>(instance);
   EntityFeatures *entity_features =

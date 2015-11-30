@@ -88,7 +88,6 @@ public:
     input_features_trigrams_.resize(length + 1,
                                     static_cast<MultiBinaryFeatures*>(NULL));
 
-
     for (int i = 0; i < length; i++) {
       input_features_unigrams_[i] = new MultiBinaryFeatures;
       input_features_unigrams_[i]->resize(EntityFeatureTemplateUnigram::size,
@@ -99,11 +98,10 @@ public:
       input_features_bigrams_[i]->resize(EntityFeatureTemplateBigram::size,
                                          static_cast<BinaryFeatures*>(NULL));
       // Make this optional?
-	  input_features_trigrams_[i] = new MultiBinaryFeatures;
+      input_features_trigrams_[i] = new MultiBinaryFeatures;
       input_features_trigrams_[i]->resize(EntityFeatureTemplateTrigram::size,
                                           static_cast<BinaryFeatures*>(NULL));
     }
-
   }
 
   const BinaryFeatures &GetPartFeatures(int r) const {
@@ -139,7 +137,7 @@ public:
     return *(GetBigramMultiFeatures(i))[j];
   };
   const BinaryFeatures &GetBigramFeatures(const MultiBinaryFeatures &BigramMultiFeatures,
-                                           int j) const {
+                                          int j) const {
     return *(BigramMultiFeatures[j]);
   };
 
@@ -154,8 +152,6 @@ public:
                                            int j) const {
     return *(TrigramMultiFeatures[j]);
   };
-
-
 
 public:
   void AddUnigramFeatures(EntityInstanceNumeric *sentence,
