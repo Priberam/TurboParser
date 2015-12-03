@@ -39,6 +39,9 @@
     <ClCompile Include="..\..\src\classifier\Writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\classifier\SparseLabeledParameterVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\classifier\Alphabet.h">

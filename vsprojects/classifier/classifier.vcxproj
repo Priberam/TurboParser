@@ -235,6 +235,7 @@
     <ClCompile Include="..\..\src\classifier\Parameters.cpp" />
     <ClCompile Include="..\..\src\classifier\Pipe.cpp" />
     <ClCompile Include="..\..\src\classifier\Reader.cpp" />
+    <ClCompile Include="..\..\src\classifier\SparseLabeledParameterVector.cpp" />
     <ClCompile Include="..\..\src\classifier\Writer.cpp" />
   </ItemGroup>
   <ItemGroup>

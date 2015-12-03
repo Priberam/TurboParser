@@ -26,7 +26,6 @@
 #include "EntityInstanceNumeric.h"
 #include "EntityWriter.h"
 #include "EntityFeatures.h"
-#include "EntityParameters.h"
 
 class EntityPipe : public SequencePipe {
 public:
@@ -58,7 +57,7 @@ protected:
   }
   void CreateReader() { reader_ = new EntityReader(options_); }
   void CreateWriter() { writer_ = new EntityWriter; }
-  void CreateParameters() { parameters_ = new EntityParameters; }
+  void CreateParameters() { parameters_ = new Parameters; }
   Features *CreateFeatures() { return new EntityFeatures(this); };
 
   void PreprocessData();

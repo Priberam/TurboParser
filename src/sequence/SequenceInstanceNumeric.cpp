@@ -21,7 +21,6 @@
 #include <algorithm>
 
 const char *kPunctuationSymbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-const int kUnknownShape = 0xffff;
 
 void SequenceInstanceNumeric::Initialize(const SequenceDictionary &dictionary,
                                          SequenceInstance* instance) {
@@ -84,7 +83,7 @@ void SequenceInstanceNumeric::Initialize(const SequenceDictionary &dictionary,
     dictionary.GetTokenDictionary()->GetWordShape(instance->GetForm(i), &shape);
     int shape_id = dictionary.GetTokenDictionary()->GetShapeId(shape);
     CHECK_LT(shape_id, 0xffff);
-    if (shape_id < 0) shape_id = kUnknownShape;
+    if (shape_id < 0) shape_id = TOKEN_UNKNOWN;
     shape_ids_[i] = shape_id;
 
     // Compute and store various flags.
