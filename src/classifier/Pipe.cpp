@@ -425,12 +425,11 @@ void Pipe::Run() {
     Instance *output_instance = instance->Copy();
     LabelInstance(parts, predicted_outputs, output_instance);
 
+    evaluate_chrono.StopTime(); 
     if (options_->evaluate()) {
       EvaluateInstance(instance, output_instance,
                        parts, gold_outputs, predicted_outputs);
     }
-
-    evaluate_chrono.StopTime();
 
     writer_->Write(output_instance);
 
@@ -452,7 +451,6 @@ void Pipe::Run() {
   LOG(INFO) << "Number of instances: " << num_instances;
   LOG(INFO) << "Time: " << static_cast<double>(diff_ms(end, start)) / 1000.0
     << " sec." << endl;
-
   LOG(INFO) << "Time (computation, excluding IO): "
     << evaluate_chrono.GetElapsedTime() << " sec.";
 

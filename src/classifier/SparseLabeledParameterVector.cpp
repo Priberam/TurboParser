@@ -907,4 +907,9 @@ void SparseLabeledParameterVector::Renormalize() {
     }
   }
   scale_factor_ = 1.0;
+
+
+
+  LOG(INFO) << 
+    " ALERT: Renormalization is not yet implemented for the matrix-based map.";
 }

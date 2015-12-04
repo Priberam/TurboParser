@@ -55,8 +55,8 @@ public:
   }
 
   uint64_t CreateFKey_W(uint8_t type,
-                        uint16_t w,
-                        uint8_t flags) {
+                        uint8_t flags,
+                        uint16_t w) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w) << 40);
     fkey |= ((uint64_t)flags);
@@ -64,9 +64,9 @@ public:
   }
 
   uint64_t CreateFKey_WP(uint8_t type,
+                         uint8_t flags,
                          uint16_t w,
-                         uint8_t p,
-                         uint8_t flags) {
+                         uint8_t p) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w) << 40);
     fkey |= (((uint64_t)p) << 32);
@@ -75,9 +75,9 @@ public:
   }
 
   uint64_t CreateFKey_WPP(uint8_t type,
+                          uint8_t flags,
                           uint16_t w,
-                          uint8_t p1, uint8_t p2,
-                          uint8_t flags) {
+                          uint8_t p1, uint8_t p2) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w) << 40);
     fkey |= (((uint64_t)p1) << 32);
@@ -87,9 +87,9 @@ public:
   }
 
   uint64_t CreateFKey_WPPP(uint8_t type,
+                           uint8_t flags,
                            uint16_t w,
-                           uint8_t p1, uint8_t p2, uint8_t p3,
-                           uint8_t flags) {
+                           uint8_t p1, uint8_t p2, uint8_t p3) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w) << 40);
     fkey |= (((uint64_t)p1) << 32);
@@ -100,9 +100,9 @@ public:
   }
 
   uint64_t CreateFKey_WPPPP(uint8_t type,
+                            uint8_t flags,
                             uint16_t w,
-                            uint8_t p1, uint8_t p2, uint8_t p3, uint8_t p4,
-                            uint8_t flags) {
+                            uint8_t p1, uint8_t p2, uint8_t p3, uint8_t p4) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w) << 40);
     fkey |= (((uint64_t)p1) << 32);
@@ -114,8 +114,8 @@ public:
   }
 
   uint64_t CreateFKey_WW(uint8_t type,
-                         uint16_t w1, uint16_t w2,
-                         uint8_t flags) {
+                         uint8_t flags,
+                         uint16_t w1, uint16_t w2) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w1) << 40);
     fkey |= (((uint64_t)w2) << 24);
@@ -124,8 +124,8 @@ public:
   }
 
   uint64_t CreateFKey_WWW(uint8_t type,
-                          uint16_t w1, uint16_t w2, uint16_t w3,
-                          uint8_t flags) {
+                          uint8_t flags,
+                          uint16_t w1, uint16_t w2, uint16_t w3) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w1) << 40);
     fkey |= (((uint64_t)w2) << 24);
@@ -135,9 +135,9 @@ public:
   }
 
   uint64_t CreateFKey_WWPP(uint8_t type,
+                           uint8_t flags,
                            uint16_t w1, uint16_t w2,
-                           uint8_t p1, uint8_t p2,
-                           uint8_t flags) {
+                           uint8_t p1, uint8_t p2) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w1) << 40);
     fkey |= (((uint64_t)w2) << 24);
@@ -148,9 +148,9 @@ public:
   }
 
   uint64_t CreateFKey_WWP(uint8_t type,
+                          uint8_t flags,
                           uint16_t w1, uint16_t w2,
-                          uint8_t p,
-                          uint8_t flags) {
+                          uint8_t p) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)w1) << 40);
     fkey |= (((uint64_t)w2) << 24);
@@ -160,8 +160,8 @@ public:
   }
 
   uint64_t CreateFKey_P(uint8_t type,
-                        uint8_t p,
-                        uint8_t flags) {
+                        uint8_t flags,
+                        uint8_t p) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p) << 48);
     fkey |= ((uint64_t)flags);
@@ -169,8 +169,8 @@ public:
   }
 
   uint64_t CreateFKey_PP(uint8_t type,
-                         uint8_t p1, uint8_t p2,
-                         uint8_t flags) {
+                         uint8_t flags,
+                         uint8_t p1, uint8_t p2) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p1) << 48);
     fkey |= (((uint64_t)p2) << 40);
@@ -179,8 +179,8 @@ public:
   }
 
   uint64_t CreateFKey_PPP(uint8_t type,
-                          uint8_t p1, uint8_t p2, uint8_t p3,
-                          uint8_t flags) {
+                          uint8_t flags,
+                          uint8_t p1, uint8_t p2, uint8_t p3) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p1) << 48);
     fkey |= (((uint64_t)p2) << 40);
@@ -189,8 +189,8 @@ public:
     return AddHashMapKeyBit(fkey);
   }
   uint64_t CreateFKey_PPPP(uint8_t type,
-                           uint8_t p1, uint8_t p2, uint8_t p3, uint8_t p4,
-                           uint8_t flags) {
+                           uint8_t flags,
+                           uint8_t p1, uint8_t p2, uint8_t p3, uint8_t p4) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p1) << 48);
     fkey |= (((uint64_t)p2) << 40);
@@ -201,9 +201,9 @@ public:
   }
 
   uint64_t CreateFKey_PPPPP(uint8_t type,
+                            uint8_t flags,
                             uint8_t p1, uint8_t p2,
-                            uint8_t p3, uint8_t p4, uint8_t p5,
-                            uint8_t flags) {
+                            uint8_t p3, uint8_t p4, uint8_t p5) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p1) << 48);
     fkey |= (((uint64_t)p2) << 40);
@@ -215,9 +215,9 @@ public:
   }
 
   uint64_t CreateFKey_PPPPPP(uint8_t type,
+                             uint8_t flags,
                              uint8_t p1, uint8_t p2, uint8_t p3,
-                             uint8_t p4, uint8_t p5, uint8_t p6,
-                             uint8_t flags) {
+                             uint8_t p4, uint8_t p5, uint8_t p6) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)p1) << 48);
     fkey |= (((uint64_t)p2) << 40);
@@ -230,8 +230,8 @@ public:
   }
 
   uint64_t CreateFKey_S(uint8_t type,
-                        uint32_t s,
-                        uint8_t flags) {
+                        uint8_t flags,
+                        uint32_t s) {
     uint64_t fkey = (((uint64_t)type) << 56);
     fkey |= (((uint64_t)s) << 24);
     fkey |= ((uint64_t)flags);
@@ -260,103 +260,122 @@ public:
   // (use bits to flag whether a element of such feature was
   // verified/occured or not).
 
-  vector<uint64_t> * CreateFKey_MultiBit_W(uint8_t type,
-                                           std::vector<uint16_t>* w_vector) {
-    if (w_vector->size() == 0) return new vector<uint64_t>(0);
+
+  void CreateFKey_MultiBit_W(uint8_t type,
+                             std::vector<uint16_t>* w_vector,
+                             BinaryFeatures * features) {
+    if (w_vector->size() == 0) return;
     std::vector<uint16_t>::iterator max_w =
       std::max_element(w_vector->begin(), w_vector->end());
     int cardinality = int(ceil((double) 1.0*(*max_w) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
     for (auto const & w : (*w_vector))
-      AddBinaryFlagToFKey(fkey, w);
-    return fkey;
+      AddBinaryFlagToFKey(&fkey, w);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
 
-  vector<uint64_t> * CreateFKey_MultiBit_W(uint8_t type,
-                                           uint16_t w) {
+  void CreateFKey_MultiBit_W(uint8_t type,
+                             uint16_t w,
+                             BinaryFeatures * features) {
     int cardinality = int(ceil((double) 1.0*w / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
-    AddBinaryFlagToFKey(fkey, w);
-    return fkey;
+    AddBinaryFlagToFKey(&fkey, w);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
 
-  vector<uint64_t> * CreateFKey_MultiBit_P(uint8_t type,
-                                           std::vector<uint8_t>* p_vector) {
-    if (p_vector->size() == 0) return new vector<uint64_t>(0);
+  void CreateFKey_MultiBit_P(uint8_t type,
+                             std::vector<uint8_t>* p_vector,
+                             BinaryFeatures * features) {
+    if (p_vector->size() == 0) return;
     std::vector<uint8_t>::iterator max_p =
       std::max_element(p_vector->begin(), p_vector->end());
     int cardinality = int(ceil((double) 1.0*(*max_p) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
     for (auto const & p : (*p_vector))
-      AddBinaryFlagToFKey(fkey, p);
-    return fkey;
+      AddBinaryFlagToFKey(&fkey, p);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
 
-  vector<uint64_t> * CreateFKey_MultiBit_P(uint8_t type,
-                                           uint8_t p) {
+  void  CreateFKey_MultiBit_P(uint8_t type,
+                              uint8_t p,
+                              BinaryFeatures * features) {
     int cardinality = int(ceil((double) 1.0*p / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
-    AddBinaryFlagToFKey(fkey, p);
-    return fkey;
+    AddBinaryFlagToFKey(&fkey, p);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
-  vector<uint64_t> * CreateFKey_MultiBit_PP(uint8_t type,
-                                            uint8_t p1, uint8_t p2) {
+  void  CreateFKey_MultiBit_PP(uint8_t type,
+                               uint8_t p1, uint8_t p2,
+                               BinaryFeatures * features) {
     int cardinality = int(ceil((double) 1.0* std::max(p1, p2) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
-    AddBinaryFlagToFKey(fkey, p1);
-    AddBinaryFlagToFKey(fkey, p2);
-    return fkey;
+    AddBinaryFlagToFKey(&fkey, p1);
+    AddBinaryFlagToFKey(&fkey, p2);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
-  vector<uint64_t> * CreateFKey_MultiBit_PPP(uint8_t type,
-                                             uint8_t p1, uint8_t p2, uint8_t p3) {
+  void CreateFKey_MultiBit_PPP(uint8_t type,
+                               uint8_t p1, uint8_t p2, uint8_t p3,
+                               BinaryFeatures * features) {
     int cardinality = int(ceil((double) 1.0* std::max({ p1, p2, p3 }) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> * fkey = new vector<uint64_t>(cardinality);
-    for (int i = 0; i < fkey->size(); i++) {
-      (*fkey)[i] = (((uint64_t)type) << 56);
-      (*fkey)[i] |= ((uint64_t)3); // ...11
-      (*fkey)[i] |= (((uint64_t)cardinality) << 2);
-      (*fkey)[i] |= (((uint64_t)i) << 5);
+    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    for (int i = 0; i < cardinality; i++) {
+      fkey[i] = (((uint64_t)type) << 56);
+      fkey[i] |= ((uint64_t)3); // ...11
+      fkey[i] |= (((uint64_t)cardinality) << 2);
+      fkey[i] |= (((uint64_t)i) << 5);
     }
-    AddBinaryFlagToFKey(fkey, p1);
-    AddBinaryFlagToFKey(fkey, p2);
-    AddBinaryFlagToFKey(fkey, p3);
-    return fkey;
+    AddBinaryFlagToFKey(&fkey, p1);
+    AddBinaryFlagToFKey(&fkey, p2);
+    AddBinaryFlagToFKey(&fkey, p3);
+    for (int i = 0; i < cardinality; i++)
+      features->push_back(fkey[i]);
+    return;
   }
 };
 #endif /* ENTITY_FEATURE_ENCODER_H_ */
