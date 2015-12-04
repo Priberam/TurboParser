@@ -28,6 +28,7 @@
 #include "Decoder.h"
 #include "Parameters.h"
 #include "AlgUtils.h"
+#include "TimeUtils.h"
 
 // Abstract class for the structured classifier mainframe.
 // It requires parts, features, a dictionary, a reader and writer, and
@@ -263,6 +264,8 @@ protected:
   // evaluation purposes).
   int num_mistakes_;
   int num_total_parts_;
+  // For evaluation timing purposes.
+  Chronometer evaluate_chrono;
 };
 
 #endif /* PIPE_H_ */

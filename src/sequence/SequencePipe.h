@@ -152,6 +152,10 @@ protected:
     double tokens_per_second = static_cast<double>(num_tokens_) / num_seconds;
     LOG(INFO) << "Tagging speed: "
       << tokens_per_second << " tokens per second.";
+    num_seconds = evaluate_chrono.GetElapsedTime();
+    tokens_per_second = static_cast<double>(num_tokens_) / num_seconds;
+    LOG(INFO) << "Tagging speed (computation, excluding IO): "
+      << tokens_per_second << " tokens per second.";
   }
 
 protected:

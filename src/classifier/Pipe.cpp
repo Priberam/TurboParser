@@ -414,6 +414,7 @@ void Pipe::Run() {
   int num_instances = 0;
   Instance *instance = reader_->GetNext();
   while (instance) {
+    evaluate_chrono.GetTime();
     Instance *formatted_instance = GetFormattedInstance(instance);
 
     MakeParts(formatted_instance, parts, &gold_outputs);
@@ -428,6 +429,8 @@ void Pipe::Run() {
       EvaluateInstance(instance, output_instance,
                        parts, gold_outputs, predicted_outputs);
     }
+
+    evaluate_chrono.StopTime();
 
     writer_->Write(output_instance);
 
@@ -447,7 +450,11 @@ void Pipe::Run() {
 
   gettimeofday(&end, NULL);
   LOG(INFO) << "Number of instances: " << num_instances;
-  LOG(INFO) << "Time: " << diff_ms(end, start);
+  LOG(INFO) << "Time: " << static_cast<double>(diff_ms(end, start)) / 1000.0
+    << " sec." << endl;
+
+  LOG(INFO) << "Time (computation, excluding IO): "
+    << evaluate_chrono.GetElapsedTime() << " sec.";
 
   if (options_->evaluate()) EndEvaluation();
 }

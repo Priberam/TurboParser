@@ -450,7 +450,7 @@ bool SparseLabeledParameterVector::Get(uint64_t key, const vector<int> &labels,
     if (iterator == map_values_.end()) {
       weights->clear();
       return false;
-      }
+    }
     GetValues(iterator, labels, weights);
     return true;
   } else {
@@ -459,7 +459,6 @@ bool SparseLabeledParameterVector::Get(uint64_t key, const vector<int> &labels,
       return false;
     }
 
-    weights->resize(labels.size());
     weights->clear();
 
     std::vector<std::vector<LabelWeights*>>::const_iterator
@@ -470,10 +469,10 @@ bool SparseLabeledParameterVector::Get(uint64_t key, const vector<int> &labels,
     }
     // uint64_t num_64bitword_keys = Get3_5BitKeys(key);
     uint64_t current_64bitword_key = Get6_8BitKeys(key);
-    bitset<48> bitset_keys = bitset<48>(GetBitKeys(key));
-    for (int i = 0; i < bitset_keys.size(); i++) {
-      if (bitset_keys.test(i)) {
-        std::vector<LabelWeights*>::const_iterator label_weights = 
+    bitset<48> bitset_keys = bitset<48>(GetBitKeys(key)); //uint64_t bitset_keys = GetBitKeys(key);
+    for (int i = 0; i < 48; i++) {
+      if (bitset_keys.test(i)) { //if ((bitset_keys & (1i64 << i)) != 0){
+        std::vector<LabelWeights*>::const_iterator label_weights =
           FindFeatureKeyVector(feature_key_vector, i + 48 * current_64bitword_key);
         if (label_weights == (*feature_key_vector).end()) {
           continue;
@@ -514,7 +513,7 @@ bool SparseLabeledParameterVector::Set(uint64_t key,
     uint64_t num_64bitword_keys = Get3_5BitKeys(key);
     uint64_t current_64bitword_key = Get6_8BitKeys(key);
     bitset<48> bitset_keys = bitset<48>(GetBitKeys(key));
-    for (int i = 0; i < bitset_keys.size(); i++) {
+    for (int i = 0; i < 48; i++) {
       if (bitset_keys.test(i)) {
         std::vector<LabelWeights*>::iterator label_weights =
           FindOrResizeFeatureKeyVector(feature_key_vector, i + 48 * current_64bitword_key);
@@ -542,7 +541,7 @@ bool SparseLabeledParameterVector::Add(uint64_t key,
     uint64_t num_64bitword_keys = Get3_5BitKeys(key);
     uint64_t current_64bitword_key = Get6_8BitKeys(key);
     bitset<48> bitset_keys = bitset<48>(GetBitKeys(key));
-    for (uint64_t i = 0; i < bitset_keys.size(); i++) {
+    for (uint64_t i = 0; i < 48; i++) {
       if (bitset_keys.test(i)) {
         std::vector<LabelWeights*>::iterator label_weights =
           FindOrResizeFeatureKeyVector(feature_key_vector, i + 48 * current_64bitword_key);
@@ -567,7 +566,7 @@ void SparseLabeledParameterVector::Add(uint64_t key,
     uint64_t num_64bitword_keys = Get3_5BitKeys(key);
     uint64_t current_64bitword_key = Get6_8BitKeys(key);
     bitset<48> bitset_keys = bitset<48>(GetBitKeys(key));
-    for (int i = 0; i < bitset_keys.size(); i++) {
+    for (int i = 0; i < 48; i++) {
       if (bitset_keys.test(i)) {
         std::vector<LabelWeights*>::iterator label_weights =
           FindOrResizeFeatureKeyVector(feature_key_vector, i + 48 * current_64bitword_key);
@@ -626,10 +625,9 @@ void SparseLabeledParameterVector::GetValues(std::vector<LabelWeights *>::const_
   }
 }
 
-
 void SparseLabeledParameterVector::GetValuesAndUpdate(std::vector<LabelWeights *>::const_iterator iterator,
-                                             const vector<int> &labels,
-                                             vector<double> *values) const {
+                                                      const vector<int> &labels,
+                                                      vector<double> *values) const {
   values->resize(labels.size());
   LabelWeights *label_weights = *iterator;
   for (int i = 0; i < labels.size(); ++i) {

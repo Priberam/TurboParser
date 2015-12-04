@@ -24,7 +24,6 @@
 
 void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
                                         int position) {
-
   CHECK(!input_features_unigrams_[position]);
   BinaryFeatures *features = new BinaryFeatures;
   input_features_unigrams_[position] = features;
@@ -377,7 +376,6 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
 
 void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
                                        int position) {
-
   CHECK(!input_features_bigrams_[position]) << position
     << " " << sentence->size();
   BinaryFeatures *features = new BinaryFeatures;
@@ -606,11 +604,10 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
 
 void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
                                         int position) {
-
   CHECK(!input_features_trigrams_[position]) << position
     << " " << sentence->size();
   BinaryFeatures *features = new BinaryFeatures;
-  input_features_trigrams_[position] =features;
+  input_features_trigrams_[position] = features;
 
   uint64_t fkey;
   uint8_t flags = 0x0;

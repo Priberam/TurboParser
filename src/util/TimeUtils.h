@@ -19,6 +19,9 @@
 #ifndef TIMEUTILS_H
 #define TIMEUTILS_H
 
+
+#include <chrono>
+
 #ifdef _WIN32
 #include <time.h>
 #else
@@ -40,5 +43,25 @@ using namespace std;
 extern int diff_ms(timeval t1, timeval t2);
 
 extern int diff_us(timeval t1, timeval t2);
+
+
+class Chronometer {
+public:
+  void GetTime() {
+    clock_begin = std::chrono::steady_clock::now();
+  }
+  void StopTime() {
+    std::chrono::steady_clock::time_point clock_end = std::chrono::steady_clock::now();
+    time_span += clock_end - clock_begin;
+  }
+  //Return elapsed time in seconds
+  double GetElapsedTime() {
+    return double(time_span.count()) *
+      std::chrono::steady_clock::period::num / std::chrono::steady_clock::period::den;
+  }
+protected:
+  std::chrono::steady_clock::time_point clock_begin;
+  std::chrono::steady_clock::duration time_span;
+};
 
 #endif // TIME_UTILS_H

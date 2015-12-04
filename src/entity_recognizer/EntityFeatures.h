@@ -19,14 +19,14 @@
 #ifndef ENTITYFEATURES_H_
 #define ENTITYFEATURES_H_
 
-#include "SequenceFeatures.h" //TODO-DN: OR Features?
+#include "SequenceFeatures.h"
 #include "FeatureEncoder.h"
 #include "EntityFeatureEncoder.h"
 #include "EntityInstanceNumeric.h"
 
 typedef std::vector<BinaryFeatures*> MultiBinaryFeatures;
 
-class EntityFeatures : public SequenceFeatures { //TODO-DN: OR Features {
+class EntityFeatures : public SequenceFeatures {
 public:
   EntityFeatures(Pipe* pipe) { pipe_ = pipe; }
   virtual ~EntityFeatures() { Clear(); }
