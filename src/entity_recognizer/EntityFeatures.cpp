@@ -18,17 +18,16 @@
 
 #include "EntityPipe.h"
 #include "EntityFeatures.h"
+#include "EntityFeatureTemplates.h"
 #include "SequencePart.h"
 #include <bitset>
 
-void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
+void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
                                         int position) {
-  for (int i = 0; i < EntityFeatureTemplateUnigram::size; i++) {
-    CHECK(!(GetUnigramMultiFeatures(position))[i]);
-    BinaryFeatures *binary_features = new BinaryFeatures;
-    (*(input_features_unigrams_[position]))[i] = binary_features;
-  }
-  MultiBinaryFeatures *features = input_features_unigrams_[position];
+
+  CHECK(!input_features_unigrams_[position]);
+  BinaryFeatures *features = new BinaryFeatures;
+  input_features_unigrams_[position] = features;
 
   int sentence_length = sentence->size();
 
@@ -138,33 +137,33 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS,
                                   flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::BIAS);
+  AddFeature(fkey, features);
 
   // Lexical features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::W,
                                WID,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::W);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pW,
                                pWID,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::pW);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nW,
                                nWID,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nW);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppW,
                                ppWID,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::ppW);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnW,
                                nnWID,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::nnW);
+  AddFeature(fkey, features);
 
   // Gazetteer features.
   //G
@@ -177,7 +176,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::G,
                                      &uint16_t_GIDs);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::G);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
   //pG
@@ -190,7 +189,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::pG,
                                      &uint16_t_pGIDs);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::pG);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -204,7 +203,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::nG,
                                      &uint16_t_nGIDs);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::nG);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -218,7 +217,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::ppG,
                                      &uint16_t_ppGIDs);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::ppG);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -232,7 +231,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::nnG,
                                      &uint16_t_nnGIDs);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::nnG);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -243,7 +242,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_P(EntityFeatureTemplateUnigram::P,
                                      PID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::P);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -253,7 +252,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_PP(EntityFeatureTemplateUnigram::PpP,
                                       PID, pPID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::PpP);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -263,7 +262,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_PP(EntityFeatureTemplateUnigram::PnP,
                                       PID, nPID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::PnP);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -273,7 +272,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_PPP(EntityFeatureTemplateUnigram::PpPppP,
                                        PID, pPID, ppPID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::PpPppP);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -283,7 +282,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_PPP(EntityFeatureTemplateUnigram::PnPnnP,
                                        PID, nPID, nnPID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::PnPnnP);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -294,7 +293,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::S,
                                      SID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::S);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -304,7 +303,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::pS,
                                      pSID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::pS);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -314,7 +313,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::nS,
                                      nSID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::nS);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -324,7 +323,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::ppS,
                                      ppSID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::ppS);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -334,7 +333,7 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
       encoder_.CreateFKey_MultiBit_W(EntityFeatureTemplateUnigram::nnS,
                                      nnSID);
     for (auto const &key : (*multibit_fkey))
-      AddFeature(key, features, EntityFeatureTemplateUnigram::nnS);
+      AddFeature(key, features);
     delete multibit_fkey;
   }
 
@@ -344,47 +343,45 @@ void EntityFeatures::AddUnigramFeatures(EntityInstanceNumeric *sentence,
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::A,
                                   AID[l], flag_prefix_length,
                                   flags);
-    AddFeature(fkey, features, EntityFeatureTemplateUnigram::A);
+    AddFeature(fkey, features);
   }
   for (int l = 0; l < ZID.size(); ++l) {
     uint8_t flag_suffix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::Z,
                                   ZID[l], flag_suffix_length,
                                   flags);
-    AddFeature(fkey, features, EntityFeatureTemplateUnigram::Z);
+    AddFeature(fkey, features);
   }
 
   // Several flags.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flag_all_digits,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+  AddFeature(fkey, features);;
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flag_all_digits_with_punctuation,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flag_all_upper,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flag_first_upper,
                                flags);
-  AddFeature(fkey, features, EntityFeatureTemplateUnigram::FLAG);
+  AddFeature(fkey, features);
 }
 
-void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
+void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
                                        int position) {
-  for (int i = 0; i < EntityFeatureTemplateBigram::size; i++) {
-    CHECK(!(GetBigramMultiFeatures(position))[i]) << position
-      << " " << sentence->size();;
-    BinaryFeatures *binary_features = new BinaryFeatures;
-    (*(input_features_bigrams_[position]))[i] = binary_features;
-  }
-  MultiBinaryFeatures *features = input_features_bigrams_[position];
+
+  CHECK(!input_features_bigrams_[position]) << position
+    << " " << sentence->size();
+  BinaryFeatures *features = new BinaryFeatures;
+  input_features_bigrams_[position] = features;
 
   uint64_t fkey;
   vector<uint64_t> * multibit_fkey;
@@ -475,7 +472,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS,
                                   flags);
-  AddFeature(fkey, features, EntityFeatureTemplateBigram::BIAS - EntityFeatureTemplateUnigram::COUNT);
+  AddFeature(fkey, features);
 
   // Lexical features.
   if (feature_set_bitmap->test(0)) {
@@ -483,27 +480,27 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::W,
                                  WID,
                                  flags);
-    AddFeature(fkey, features, EntityFeatureTemplateBigram::W - EntityFeatureTemplateUnigram::COUNT);
+    AddFeature(fkey, features);
     //pContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pW,
                                  pWID,
                                  flags);
-    AddFeature(fkey, features, EntityFeatureTemplateBigram::pW - EntityFeatureTemplateUnigram::COUNT);
+    AddFeature(fkey, features);
     //nContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nW,
                                  nWID,
                                  flags);
-    AddFeature(fkey, features, EntityFeatureTemplateBigram::nW - EntityFeatureTemplateUnigram::COUNT);
+    AddFeature(fkey, features);
     //ppContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppW,
                                  ppWID,
                                  flags);
-    AddFeature(fkey, features, EntityFeatureTemplateBigram::ppW - EntityFeatureTemplateUnigram::COUNT);
+    AddFeature(fkey, features);
     //nnContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnW,
                                  nnWID,
                                  flags);
-    AddFeature(fkey, features, EntityFeatureTemplateBigram::nnW - EntityFeatureTemplateUnigram::COUNT);
+    AddFeature(fkey, features);
   }
 
   // POS features.
@@ -514,8 +511,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      PID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::P - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //PpP
@@ -524,8 +520,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                       PID, pPID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::PpP - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //PnP
@@ -534,8 +529,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                       PID, nPID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::PnP - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //PpPppP
@@ -544,8 +538,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                        PID, pPID, ppPID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::PpPppP - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //PnPnnP
@@ -554,8 +547,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                        PID, nPID, nnPID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::PnPnnP - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
   }
@@ -568,8 +560,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      SID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::S - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
 
@@ -579,8 +570,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      pSID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::pS - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //nS
@@ -589,8 +579,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      nSID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::nS - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //ppS
@@ -599,8 +588,7 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      ppSID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::ppS - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
     //nnS
@@ -609,23 +597,20 @@ void EntityFeatures::AddBigramFeatures(EntityInstanceNumeric *sentence,
                                                      nnSID);
       for (auto const &key : (*multibit_fkey))
         AddFeature(key,
-                   features,
-                   EntityFeatureTemplateBigram::nnS - EntityFeatureTemplateUnigram::COUNT);
+                   features);
       delete multibit_fkey;
     }
   }
   delete feature_set_bitmap;
 }
 
-void EntityFeatures::AddTrigramFeatures(EntityInstanceNumeric *sentence,
+void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
                                         int position) {
-  for (int i = 0; i < EntityFeatureTemplateTrigram::size; i++) {
-    CHECK(!(GetTrigramMultiFeatures(position))[i]) << position
-      << " " << sentence->size();
-    BinaryFeatures *binary_features = new BinaryFeatures;
-    (*(input_features_trigrams_[position]))[i] = binary_features;
-  }
-  MultiBinaryFeatures *features = input_features_trigrams_[position];
+
+  CHECK(!input_features_trigrams_[position]) << position
+    << " " << sentence->size();
+  BinaryFeatures *features = new BinaryFeatures;
+  input_features_trigrams_[position] =features;
 
   uint64_t fkey;
   uint8_t flags = 0x0;
@@ -637,5 +622,5 @@ void EntityFeatures::AddTrigramFeatures(EntityInstanceNumeric *sentence,
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS,
                                   flags);
-  AddFeature(fkey, features, EntityFeatureTemplateTrigram::BIAS - EntityFeatureTemplateBigram::COUNT);
+  AddFeature(fkey, features);
 }

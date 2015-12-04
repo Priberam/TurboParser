@@ -32,13 +32,13 @@ public:
   EntityPipe(Options* options) : SequencePipe(options) {}
   virtual ~EntityPipe() {}
 
-  void Initialize() {
-    CreateDictionary();
-    CreateReader();
-    CreateWriter();
-    CreateDecoder();
-    CreateParameters();
-  }
+  //void Initialize() {
+  //  CreateDictionary();
+  //  CreateReader();
+  //  CreateWriter();
+  //  CreateDecoder();
+  //  CreateParameters();
+  //}
 
   EntityReader *GetEntityReader() {
     return static_cast<EntityReader*>(reader_);
@@ -57,7 +57,7 @@ protected:
   }
   void CreateReader() { reader_ = new EntityReader(options_); }
   void CreateWriter() { writer_ = new EntityWriter; }
-  void CreateParameters() { parameters_ = new Parameters; }
+  //void CreateParameters() { parameters_ = new Parameters; }
   Features *CreateFeatures() { return new EntityFeatures(this); };
 
   void PreprocessData();
@@ -97,25 +97,23 @@ protected:
   //                     vector<double> *gold_outputs);
   //void MakeTrigramParts(Instance *instance, Parts *parts,
   //                     vector<double> *gold_outputs);
+  //void MakeSelectedFeatures(Instance *instance, Parts *parts,
+  //                          const vector<bool> &selected_parts, Features *features);
 
-  void MakeSelectedFeatures(Instance *instance, Parts *parts,
-                            const vector<bool> &selected_parts, Features *features);
+  //void ComputeScores(Instance *instance, Parts *parts, Features *features,
+  //                   vector<double> *scores);
 
-  void ComputeScores(Instance *instance, Parts *parts, Features *features,
-                     vector<double> *scores);
-
-  void MakeFeatureDifference(Parts *parts,
-                             Features *features,
-                             const vector<double> &gold_output,
-                             const vector<double> &predicted_output,
-                             FeatureVector *difference);
-
-  void MakeGradientStep(Parts *parts,
-                        Features *features,
-                        double eta,
-                        int iteration,
-                        const vector<double> &gold_output,
-                        const vector<double> &predicted_output);
+  //void MakeFeatureDifference(Parts *parts,
+  //                           Features *features,
+  //                           const vector<double> &gold_output,
+  //                           const vector<double> &predicted_output,
+  //                           FeatureVector *difference);
+  //void MakeGradientStep(Parts *parts,
+  //                      Features *features,
+  //                      double eta,
+  //                      int iteration,
+  //                      const vector<double> &gold_output,
+  //                      const vector<double> &predicted_output);
 
   //void LabelInstance(Parts *parts, const vector<double> &output,
   //                   Instance *instance);
