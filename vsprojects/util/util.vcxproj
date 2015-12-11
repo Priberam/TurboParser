@@ -224,6 +224,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\util\AlgUtils.h" />
     <ClInclude Include="..\..\src\util\logval.h" />
+    <ClInclude Include="..\..\src\util\MemPool.h" />
     <ClInclude Include="..\..\src\util\SerializationUtils.h" />
     <ClInclude Include="..\..\src\util\StringUtils.h" />
     <ClInclude Include="..\..\src\util\TimeUtils.h" />

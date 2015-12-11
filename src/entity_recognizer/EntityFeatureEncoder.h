@@ -238,28 +238,26 @@ public:
     return AddHashMapKeyBit(fkey);
   }
 
-  void AddBinaryFlagToFKey(vector<uint64_t> * feature_key,
+  void AddBinaryFlagToFKey(uint64_t * feature_key,
                            uint8_t position) {
-    for (int i = 0, offset = 0; i < feature_key->size(); i++, offset += 48) {
-      if (position > offset + 48) continue;
-      (*feature_key)[i] |= (((uint64_t)1) << ((position % 48) + 8));
-      break;
-    }
+    (feature_key)[position / 48] |= (((uint64_t)1) << ((position % 48) + 8));
   }
-
-  void AddBinaryFlagToFKey(vector<uint64_t> * feature_key,
+  void AddBinaryFlagToFKey(std::vector<uint64_t> * feature_key,
+                           uint8_t position) {
+    (*feature_key)[position / 48] |= (((uint64_t)1) << ((position % 48) + 8));
+  }
+  void AddBinaryFlagToFKey(uint64_t * feature_key,
                            uint16_t position) {
-    for (int i = 0, offset = 0; i < feature_key->size(); i++, offset += 48) {
-      if (position > offset + 48) continue;
-      (*feature_key)[i] |= (((uint64_t)1) << ((position % 48) + 8));
-      break;
-    }
+    (feature_key)[position / 48] |= (((uint64_t)1) << ((position % 48) + 8));
+  }
+  void AddBinaryFlagToFKey(std::vector<uint64_t> * feature_key,
+                           uint16_t position) {
+    (*feature_key)[position / 48] |= (((uint64_t)1) << ((position % 48) + 8));
   }
 
   // Create bit-wise oriented key
   // (use bits to flag whether a element of such feature was
   // verified/occured or not).
-
 
   void CreateFKey_MultiBit_W(uint8_t type,
                              std::vector<uint16_t>* w_vector,
@@ -267,9 +265,9 @@ public:
     if (w_vector->size() == 0) return;
     std::vector<uint16_t>::iterator max_w =
       std::max_element(w_vector->begin(), w_vector->end());
-    int cardinality = int(ceil((double) 1.0*(*max_w) / 48));
+    int cardinality = int(ceil((double) 1.0*((*max_w) + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11
@@ -286,9 +284,9 @@ public:
   void CreateFKey_MultiBit_W(uint8_t type,
                              uint16_t w,
                              BinaryFeatures * features) {
-    int cardinality = int(ceil((double) 1.0*w / 48));
+    int cardinality = int(ceil((double) 1.0*(w + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11
@@ -307,9 +305,9 @@ public:
     if (p_vector->size() == 0) return;
     std::vector<uint8_t>::iterator max_p =
       std::max_element(p_vector->begin(), p_vector->end());
-    int cardinality = int(ceil((double) 1.0*(*max_p) / 48));
+    int cardinality = int(ceil((double) 1.0*((*max_p) + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11
@@ -326,9 +324,9 @@ public:
   void  CreateFKey_MultiBit_P(uint8_t type,
                               uint8_t p,
                               BinaryFeatures * features) {
-    int cardinality = int(ceil((double) 1.0*p / 48));
+    int cardinality = int(ceil((double) 1.0*(p + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11
@@ -343,9 +341,9 @@ public:
   void  CreateFKey_MultiBit_PP(uint8_t type,
                                uint8_t p1, uint8_t p2,
                                BinaryFeatures * features) {
-    int cardinality = int(ceil((double) 1.0* std::max(p1, p2) / 48));
+    int cardinality = int(ceil((double) 1.0* (std::max(p1, p2) + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11
@@ -361,9 +359,9 @@ public:
   void CreateFKey_MultiBit_PPP(uint8_t type,
                                uint8_t p1, uint8_t p2, uint8_t p3,
                                BinaryFeatures * features) {
-    int cardinality = int(ceil((double) 1.0* std::max({ p1, p2, p3 }) / 48));
+    int cardinality = int(ceil((double) 1.0*(std::max({ p1, p2, p3 }) + 1) / 48));
     CHECK(cardinality <= 8);
-    vector<uint64_t> fkey = vector<uint64_t>(cardinality);
+    std::vector<uint64_t> fkey = std::vector<uint64_t>(cardinality);
     for (int i = 0; i < cardinality; i++) {
       fkey[i] = (((uint64_t)type) << 56);
       fkey[i] |= ((uint64_t)3); // ...11

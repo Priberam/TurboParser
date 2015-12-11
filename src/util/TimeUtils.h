@@ -46,7 +46,12 @@ extern int diff_us(timeval t1, timeval t2);
 
 
 class Chronometer {
-public:
+public: 
+  Chronometer() { 
+    time_span = std::chrono::steady_clock::duration::zero(); 
+  };
+  virtual ~Chronometer() {};
+
   void GetTime() {
     clock_begin = std::chrono::steady_clock::now();
   }

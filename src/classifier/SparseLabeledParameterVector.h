@@ -47,93 +47,91 @@ const int kNumMaxSparseLabels = 5;
 class LabelWeights {
 public:
   LabelWeights() {};
-  virtual ~LabelWeights() {};
+  ~LabelWeights() {};
 
   // True if set of labels is sparse.
-  virtual bool IsSparse() const = 0;
+  bool IsSparse() const;
 
   // Number of allocated labels.
-  virtual int Size() const = 0;
+  int SparseSize() const;
+  int DenseSize() const;
+  int Size() const;
 
   // Get/set/add weight to a labeled feature.
-  virtual double GetWeight(int label) const = 0;
-  virtual void SetWeight(int label, double weight) = 0;
-  virtual void AddWeight(int label, double weight) = 0;
-  virtual double SetWeightAndNormalize(int label, double value,
-                                       double scaling_factor) = 0;
-  virtual double AddWeightAndNormalize(int label, double value,
-                                       double scaling_factor) = 0;
+  double SparseGetWeight(int label) const;
+  double DenseGetWeight(int label) const;
+  double GetWeight(int label) const;
+
+  void SparseSetWeight(int label,
+                       double weight);
+  void DenseSetWeight(int label,
+                      double weight);
+  void SetWeight(int label,
+                 double weight);
+
+  void SparseAddWeight(int label,
+                       double weight);
+  void DenseAddWeight(int label,
+                      double weight);
+  void AddWeight(int label,
+                 double weight);
+
+
+  double SparseSetWeightAndNormalize(int label,
+                                     double value,
+                                     double scale_factor);
+  double DenseSetWeightAndNormalize(int label,
+                                    double value,
+                                    double scale_factor);
+  double SetWeightAndNormalize(int label,
+                               double value,
+                               double scale_factor);
+
+  double SparseAddWeightAndNormalize(int label,
+                                     double value,
+                                     double scale_factor);
+  double DenseAddWeightAndNormalize(int label,
+                                    double value,
+                                    double scale_factor);
+  double AddWeightAndNormalize(int label,
+                               double value,
+                               double scale_factor);
 
   // Get/set weight querying by position rather than the label.
-  virtual void GetLabelWeightByPosition(int position, int *label,
-                                        double *weight) const = 0;
-  virtual void SetWeightByPosition(int position, double weight) = 0;
-};
-
-// Sparse implementation of LabelWeights.
-class SparseLabelWeights : public LabelWeights {
-public:
-  SparseLabelWeights() {};
-  virtual ~SparseLabelWeights() {};
-
-  bool IsSparse() const;
-  int Size() const;
-
-  double GetWeight(int label) const;
-  void SetWeight(int label, double weight);
-  void AddWeight(int label, double weight);
-  // Sets new weight, normalize it and returns previous value of
-  // label_weights_[k].second, with k such that label == label_weights_[k].first.
-  double SetWeightAndNormalize(int label, double value, double scale_factor);
-  // Add weight value to current weight, normalize it and
-  // returns previous value of label_weights_[k].second,
-  // with k such that label == label_weights_[k].first.
-  double AddWeightAndNormalize(int label, double value, double scale_factor);
-
-  void GetLabelWeightByPosition(int position, int *label,
+  void SparseGetLabelWeightByPosition(int position,
+                                      int *label,
+                                      double *weight) const;
+  void DenseGetLabelWeightByPosition(int position,
+                                     int *label,
+                                     double *weight) const;
+  void GetLabelWeightByPosition(int position,
+                                int *label,
                                 double *weight) const;
 
-  void SetWeightByPosition(int position, double weight);
+  void SparseSetWeightByPosition(int position,
+                                 double weight);
+  void DenseSetWeightByPosition(int position,
+                                double weight);
+  void SetWeightByPosition(int position,
+                           double weight);
+
+  void ChangeToDenseLabelWeights();
+  void SetDenseMode();
+  void ClearSparseData();
 
 protected:
-  std::vector<std::pair<int, double> > label_weights_;
-};
-
-// Dense implementation of LabelWeights.
-class DenseLabelWeights : public LabelWeights {
-public:
-  DenseLabelWeights() {};
-  DenseLabelWeights(LabelWeights *label_weights);
-  virtual ~DenseLabelWeights() {};
-
-  bool IsSparse() const;
-  int Size() const;
-
-  double GetWeight(int label) const;
-  void SetWeight(int label, double weight);
-  void AddWeight(int label, double weight);
-  // Sets new weight, normalize it and returns previous value of weights_[label].
-  double SetWeightAndNormalize(int label, double value, double scaling_factor);
-  // Add weight value to current weight,
-  // normalize it and returns previous value of weights_[label].
-  double AddWeightAndNormalize(int label, double value, double scaling_factor);
-
-  void GetLabelWeightByPosition(int position, int *label,
-                                double *weight) const;
-
-  void SetWeightByPosition(int position, double weight);
-
-protected:
-  vector<double> weights_;
+  bool dense_mode;
+  std::vector<std::pair<int, double> > sparse_label_weights_;
+  vector<double> dense_label_weights_;
 };
 
 // A labeled parameter map maps from feature keys ("labeled" features) to
 // LabelWeights, which contain the weights of several labels conjoined with
 // that feature.
 #ifdef USE_CUSTOMIZED_HASH_TABLE
-typedef HashTable<uint64_t, LabelWeights*> LabeledParameterMap;
+typedef HashTable<uint64_t, LabelWeights> LabeledParameterMap;
 #else
-typedef std::tr1::unordered_map <uint64_t, LabelWeights*> LabeledParameterMap;
+typedef std::tr1::unordered_map <uint64_t, LabelWeights> LabeledParameterMap;
 #endif
 
 // This class implements a sparse parameter vector, which contains weights for
@@ -224,29 +222,31 @@ protected:
   uint64_t SparseLabeledParameterVector::GetMatrixSize() const;
   uint64_t SparseLabeledParameterVector::GetMatrixFamilyFeatureVectorSize() const;
   uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(int x) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(const vector<LabelWeights*>&  feature_key_vector) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(std::vector<std::vector<LabelWeights*>>::const_iterator ptr_to_feature_key_vector) const;
+  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(const vector<LabelWeights>&  feature_key_vector) const;
+  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(std::vector<std::vector<LabelWeights>>::const_iterator ptr_to_feature_key_vector) const;
   uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(int x, int y) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(LabelWeights* label_weights_vector) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(std::vector<LabelWeights*>::const_iterator ptr_to_label_weights_vector) const;
+  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(LabelWeights & label_weights_vector) const;
+  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(std::vector<LabelWeights>::const_iterator ptr_to_label_weights_vector) const;
 
   bool isHashMapKey(uint64_t key) const;
   bool isMatrixMapKey(uint64_t key) const;
   bool isMulti64bitKey(uint64_t key) const;
   uint64_t GetFamilyFeatureKey(uint64_t key) const;
-  uint64_t GetBitKeys(uint64_t key) const;
-  uint64_t Get3_5BitKeys(uint64_t key) const;
-  uint64_t Get6_8BitKeys(uint64_t key) const;
+  uint64_t GetBlock48BitKeys(uint64_t key) const;
+  uint64_t GetTuple3_5BitKeys(uint64_t key) const;
+  uint64_t GetTuple6_8BitKeys(uint64_t key) const;
+  uint64_t GetMultiKeyCardinalityBitKeys(uint64_t key) const;
+  uint64_t GetMultiKeyCurrentOffsetBitKeys(uint64_t key) const;
 
   // Get the weights for the specified labels.
   void GetValues(LabeledParameterMap::const_iterator iterator,
                  const vector<int> &labels,
                  vector<double> *values) const;
 
-  void GetValues(std::vector<LabelWeights *>::const_iterator iterator,
+  void GetValues(std::vector<LabelWeights>::const_iterator iterator,
                  const vector<int> &labels,
                  vector<double> *values) const;
-  void GetValuesAndUpdate(std::vector<LabelWeights *>::const_iterator iterator,
+  void GetValuesAndUpdate(std::vector<LabelWeights>::const_iterator iterator,
                           const vector<int> &labels,
                           vector<double> *values) const;
 
@@ -257,9 +257,9 @@ protected:
                   int label) const;
   double GetValue(LabeledParameterMap::iterator iterator,
                   int label) const;
-  double GetValue(std::vector<LabelWeights *>::const_iterator iterator,
+  double GetValue(std::vector<LabelWeights>::const_iterator iterator,
                   int label) const;
-  double GetValue(std::vector<LabelWeights *>::iterator iterator,
+  double GetValue(std::vector<LabelWeights>::iterator iterator,
                   int label) const;
 
   // Set the weight for the specified label.
@@ -268,7 +268,7 @@ protected:
                 double value);
 
   // Set the weight for the specified label.
-  void SetValue(std::vector<LabelWeights *>::iterator iterator,
+  void SetValue(std::vector<LabelWeights>::iterator iterator,
                 int label,
                 double value);
 
@@ -278,24 +278,24 @@ protected:
                 int label,
                 double value);
   // Add weight for the specified label.
-  void AddValue(std::vector<LabelWeights *>::iterator iterator,
+  void AddValue(std::vector<LabelWeights>::iterator iterator,
                 int label,
                 double value);
 
   // Find a key, or insert it in case it does not exist.
   LabeledParameterMap::iterator FindOrInsert(uint64_t key);
 
-  std::vector<std::vector<LabelWeights*>>::const_iterator FindFamilyFeatureVector(uint64_t key) const;
-  std::vector<std::vector<LabelWeights*>>::iterator FindOrResizeFamilyFeatureVector(uint64_t key);
+  std::vector<std::vector<LabelWeights>>::const_iterator FindFamilyFeatureVector(uint64_t key) const;
+  std::vector<std::vector<LabelWeights>>::iterator FindOrResizeFamilyFeatureVector(uint64_t key);
 
-  std::vector<LabelWeights*>::const_iterator FindFeatureKeyVector(
-    std::vector<std::vector<LabelWeights*>>::const_iterator feature_key_vector,
+  std::vector<LabelWeights>::const_iterator FindFeatureKeyVector(
+    std::vector<std::vector<LabelWeights>>::const_iterator feature_key_vector,
     uint64_t index) const;
-  std::vector<LabelWeights*>::iterator FindOrResizeFeatureKeyVector(
-    std::vector<std::vector<LabelWeights*>>::iterator feature_key_vector,
+  std::vector<LabelWeights>::iterator FindOrResizeFeatureKeyVector(
+    std::vector<std::vector<LabelWeights>>::iterator feature_key_vector,
     uint64_t index);
   void SparseLabeledParameterVector::ResizeFeatureKeyVector(
-    std::vector<std::vector<LabelWeights*>>::iterator feature_key_vector, uint64_t size);
+    std::vector<std::vector<LabelWeights>>::iterator feature_key_vector, uint64_t size);
 
 
   // If the scale factor is too small, renormalize the entire parameter map.
@@ -306,7 +306,7 @@ protected:
 
 protected:
   LabeledParameterMap map_values_; // Weight values, up to a scale. Hash-table-based storage.
-  vector<vector<LabelWeights*>> matrix_values_; // Weight values, up to a scale. Vector-based storage.
+  vector<vector<LabelWeights>> matrix_values_; // Weight values, up to a scale. Vector-based storage.
   double scale_factor_; // The scale factor, such that w = values * scale.
   double squared_norm_; // The squared norm of the parameter vector.
   bool growth_stopped_; // True if parameters are locked.

@@ -430,19 +430,19 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
     encoder_.CreateFKey_MultiBit_P(EntityFeatureTemplateBigram::P,
                                    PID,
                                    features);
-    //PpP      
+    //PpP
     encoder_.CreateFKey_MultiBit_PP(EntityFeatureTemplateBigram::PpP,
                                     PID, pPID,
                                     features);
-    //PnP      
+    //PnP
     encoder_.CreateFKey_MultiBit_PP(EntityFeatureTemplateBigram::PnP,
                                     PID, nPID,
                                     features);
-    //PpPppP   
+    //PpPppP
     encoder_.CreateFKey_MultiBit_PPP(EntityFeatureTemplateBigram::PpPppP,
                                      PID, pPID, ppPID,
                                      features);
-    //PnPnnP   
+    //PnPnnP
     encoder_.CreateFKey_MultiBit_PPP(EntityFeatureTemplateBigram::PnPnnP,
                                      PID, nPID, nnPID,
                                      features);

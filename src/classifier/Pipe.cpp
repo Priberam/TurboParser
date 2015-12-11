@@ -425,7 +425,7 @@ void Pipe::Run() {
     Instance *output_instance = instance->Copy();
     LabelInstance(parts, predicted_outputs, output_instance);
 
-    evaluate_chrono.StopTime(); 
+    evaluate_chrono.StopTime();
     if (options_->evaluate()) {
       EvaluateInstance(instance, output_instance,
                        parts, gold_outputs, predicted_outputs);

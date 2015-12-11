@@ -74,6 +74,16 @@ void SequencePipe::PreprocessData() {
     CreateTagDictionary(GetSequenceReader());
 }
 
+void UpdateLocalScore(const std::vector<double> & from, std::vector<double>* to) {
+  if (to->size() < from.size())
+    to->resize(from.size(), 0);
+  for (int i = 0; i < from.size(); i++)
+    (*to)[i] += from[i];
+}
+
+typedef std::unordered_map<uint64_t, std::vector<double>> FeatureLabelScoresHashMap;
+FeatureLabelScoresHashMap cache;
+
 void SequencePipe::ComputeScores(Instance *instance,
                                  Parts *parts,
                                  Features *features,
@@ -86,29 +96,65 @@ void SequencePipe::ComputeScores(Instance *instance,
   SequenceDictionary *sequence_dictionary = GetSequenceDictionary();
   scores->resize(parts->size());
 
-  // Compute scores for the unigram parts.
-  for (int i = 0; i < sentence->size(); ++i) {
-    // Conjoin unigram features with the tag.
-    const BinaryFeatures &unigram_features =
-      sequence_features->GetUnigramFeatures(i);
+  if (FLAGS_test) {
+    std::vector<int> all_tags(sequence_dictionary->GetTagAlphabet().size());
+    for (int i = 0; i < all_tags.size(); ++i)
+      all_tags[i] = i;
 
-    const vector<int> &index_unigram_parts =
-      sequence_parts->FindUnigramParts(i);
-    vector<int> allowed_tags(index_unigram_parts.size());
-    for (int k = 0; k < index_unigram_parts.size(); ++k) {
-      SequencePartUnigram *unigram =
-        static_cast<SequencePartUnigram*>((*parts)[index_unigram_parts[k]]);
-      allowed_tags[k] = unigram->tag();
+    std::vector < std::vector<double> >  sentence_scores;
+    sentence_scores.resize(sentence->size());
+    for (int i = 0; i < sentence->size(); ++i) {
+      // Conjoin unigram features with the tag.
+      const BinaryFeatures &unigram_features =
+        sequence_features->GetUnigramFeatures(i);
+      for (auto& feature : unigram_features) {
+        auto cache_it = cache.find(feature);
+        if (cache_it == cache.end()) {
+          auto ins = cache.insert({ feature, {} });
+          ins.first->second.resize(all_tags.size());
+          parameters_->Get(feature,
+                           all_tags,
+                           &ins.first->second);
+          UpdateLocalScore(ins.first->second, &sentence_scores[i]);
+        } else {
+          UpdateLocalScore(cache_it->second, &sentence_scores[i]);
+        }
+      }
     }
-    vector<double> tag_scores;
-    parameters_->ComputeLabelScores(unigram_features,
-                                    allowed_tags,
-                                    &tag_scores);
-    for (int k = 0; k < index_unigram_parts.size(); ++k) {
-      (*scores)[index_unigram_parts[k]] = tag_scores[k];
+
+    int i = 0;
+    for (auto part : *parts) {
+      if (part->type() != SEQUENCEPART_UNIGRAM)
+        break;
+      SequencePartUnigram *unigram =
+        static_cast<SequencePartUnigram*>(part);
+      (*scores)[i] = ((sentence_scores[unigram->position()]))[unigram->tag()];
+      i++;
+    }
+  } else if (FLAGS_train) {
+    // Compute scores for the unigram parts.
+    for (int i = 0; i < sentence->size(); ++i) {
+      // Conjoin unigram features with the tag.
+      const BinaryFeatures &unigram_features =
+        sequence_features->GetUnigramFeatures(i);
+
+      const vector<int> &index_unigram_parts =
+        sequence_parts->FindUnigramParts(i);
+      vector<int> allowed_tags(index_unigram_parts.size());
+      for (int k = 0; k < index_unigram_parts.size(); ++k) {
+        SequencePartUnigram *unigram =
+          static_cast<SequencePartUnigram*>((*parts)[index_unigram_parts[k]]);
+        allowed_tags[k] = unigram->tag();
+      }
+      vector<double> tag_scores;
+      parameters_->ComputeLabelScores(unigram_features,
+                                      allowed_tags,
+                                      &tag_scores);
+      for (int k = 0; k < index_unigram_parts.size(); ++k) {
+        (*scores)[index_unigram_parts[k]] = tag_scores[k];
+      }
     }
   }
-
   // Compute scores for the bigram parts.
   if (GetSequenceOptions()->markov_order() >= 1) {
     for (int i = 0; i < sentence->size() + 1; ++i) {
@@ -331,6 +377,10 @@ void SequencePipe::MakeUnigramParts(Instance *instance,
 
     // Add parts.
     CHECK_GE(allowed_tags.size(), 0);
+
+    sequence_parts->reserve(sequence_parts->size() + allowed_tags.size());
+    if (make_gold) { gold_outputs->reserve(gold_outputs->size() + allowed_tags.size()); }
+
     for (int k = 0; k < allowed_tags.size(); ++k) {
       int tag = allowed_tags[k];
       // Don't create a inigram part if a start/stop bigram is not allowed.
@@ -369,6 +419,10 @@ void SequencePipe::MakeBigramParts(Instance *instance,
 
   // Start position.
   const vector<int> &initial_parts = sequence_parts->FindUnigramParts(0);
+
+  sequence_parts->reserve(sequence_parts->size() + initial_parts.size());
+  if (make_gold) { gold_outputs->reserve(gold_outputs->size() + initial_parts.size()); }
+
   for (int j = 0; j < initial_parts.size(); ++j) {
     SequencePartUnigram *initial_part = static_cast<SequencePartUnigram *>(
       (*sequence_parts)[initial_parts[j]]);
@@ -383,6 +437,14 @@ void SequencePipe::MakeBigramParts(Instance *instance,
   for (int i = 1; i < sentence_length; ++i) {
     const vector<int> &current_parts = sequence_parts->FindUnigramParts(i);
     const vector<int> &previous_parts = sequence_parts->FindUnigramParts(i - 1);
+
+    sequence_parts->reserve(sequence_parts->size() +
+                            current_parts.size()*previous_parts.size());
+    if (make_gold) {
+      gold_outputs->reserve(gold_outputs->size() +
+                            current_parts.size()*previous_parts.size());
+    }
+
     for (int j = 0; j < current_parts.size(); ++j) {
       SequencePartUnigram *current_part = static_cast<SequencePartUnigram *>(
         (*sequence_parts)[current_parts[j]]);
@@ -410,6 +472,10 @@ void SequencePipe::MakeBigramParts(Instance *instance,
   // Final position.
   const vector<int> &final_parts =
     sequence_parts->FindUnigramParts(sentence_length - 1);
+
+  sequence_parts->reserve(sequence_parts->size() + final_parts.size());
+  if (make_gold) { gold_outputs->reserve(gold_outputs->size() + final_parts.size()); }
+
   for (int j = 0; j < final_parts.size(); ++j) {
     SequencePartUnigram *final_part = static_cast<SequencePartUnigram *>(
       (*sequence_parts)[final_parts[j]]);
@@ -442,6 +508,10 @@ void SequencePipe::MakeTrigramParts(Instance *instance,
   // Start position.
   const vector<int> &initial_parts = sequence_parts->FindUnigramParts(0);
   const vector<int> &next_initial_parts = sequence_parts->FindUnigramParts(1);
+
+  sequence_parts->reserve(sequence_parts->size() + initial_parts.size()*next_initial_parts.size());
+  if (make_gold) { gold_outputs->reserve(gold_outputs->size() + initial_parts.size()*next_initial_parts.size()); }
+
   for (int j = 0; j < next_initial_parts.size(); ++j) {
     SequencePartUnigram *current_part = static_cast<SequencePartUnigram *>(
       (*sequence_parts)[next_initial_parts[j]]);
@@ -471,6 +541,14 @@ void SequencePipe::MakeTrigramParts(Instance *instance,
     const vector<int> &previous_parts = sequence_parts->FindUnigramParts(i - 1);
     const vector<int> &before_previous_parts =
       sequence_parts->FindUnigramParts(i - 2);
+
+    sequence_parts->reserve(sequence_parts->size() +
+                            current_parts.size()*previous_parts.size()*before_previous_parts.size());
+    if (make_gold) {
+      gold_outputs->reserve(gold_outputs->size() +
+                            current_parts.size()*previous_parts.size()*before_previous_parts.size());
+    }
+
     for (int j = 0; j < current_parts.size(); ++j) {
       SequencePartUnigram *current_part = static_cast<SequencePartUnigram *>(
         (*sequence_parts)[current_parts[j]]);
@@ -514,6 +592,10 @@ void SequencePipe::MakeTrigramParts(Instance *instance,
     sequence_parts->FindUnigramParts(sentence_length - 1);
   const vector<int> &before_final_parts =
     sequence_parts->FindUnigramParts(sentence_length - 2);
+
+  sequence_parts->reserve(sequence_parts->size() + final_parts.size()*before_final_parts.size());
+  if (make_gold) { gold_outputs->reserve(gold_outputs->size() + final_parts.size()*before_final_parts.size()); }
+
   for (int j = 0; j < final_parts.size(); ++j) {
     SequencePartUnigram *current_part = static_cast<SequencePartUnigram *>(
       (*sequence_parts)[final_parts[j]]);

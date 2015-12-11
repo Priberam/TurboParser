@@ -78,7 +78,12 @@ public:
   // numbered 0, 1, 2, ...
   int GetNumCurrentStates() const { return scores_.size(); }
   void SetNumCurrentStates(int num_current_states) {
+    size_t previous_size = scores_.size();
     scores_.resize(num_current_states);
+    //use num_current_states as an approximation of the number of elements
+    //that could be stored in scores_[i]
+    for (int i = previous_size; i < scores_.size(); i++)
+      scores_[i].reserve(num_current_states);
   }
 
   // Get/set the number of previous states compatible with the current node.

@@ -27,7 +27,20 @@ void SequenceParts::DeleteAll() {
 
   for (iterator iter = begin(); iter != end(); iter++) {
     if ((*iter) != NULL) {
+#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS 1
+      if ((*iter)->type == SEQUENCEPART_UNIGRAM) {
+        SequencePartUnigram * spu = static_cast<SequencePartUnigram *>((*iter));
+        spu->SequencePartUnigram::~SequencePartUnigram();
+      } else if ((*iter)->type == SEQUENCEPART_BIGRAM) {
+        SequencePartBigram * spb = static_cast<SequencePartBigram *>((*iter));
+        spb->SequencePartBigram::~SequencePartBigram();
+      }if ((*iter)->type == SEQUENCEPART_TRIGRAM) {
+        SequencePartTrigram * spt = static_cast<SequencePartTrigram *>((*iter));
+        spt->SequencePartTrigram::~SequencePartTrigram();
+      }
+#else
       delete (*iter);
+#endif
       *iter = NULL;
     }
   }
