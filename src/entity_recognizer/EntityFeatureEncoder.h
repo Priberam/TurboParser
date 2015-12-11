@@ -22,6 +22,9 @@
 #include "FeatureEncoder.h"
 #include <algorithm>
 
+#define USE_ENTITY_MULTIKEY_ENCODING 0
+
+
 // This class implements several methods to pack a conjunction of atomic
 // features into a 64-bit word.
 class EntityFeatureEncoder : public FeatureEncoder {
@@ -238,6 +241,8 @@ public:
     return AddHashMapKeyBit(fkey);
   }
 
+
+#if  USE_ENTITY_MULTIKEY_ENCODING == 1
   void AddBinaryFlagToFKey(uint64_t * feature_key,
                            uint8_t position) {
     (feature_key)[position / 48] |= (((uint64_t)1) << ((position % 48) + 8));
@@ -375,5 +380,6 @@ public:
       features->push_back(fkey[i]);
     return;
   }
+#endif
 };
 #endif /* ENTITY_FEATURE_ENCODER_H_ */
