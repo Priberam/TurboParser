@@ -587,7 +587,7 @@ bool SparseLabeledParameterVector::Get(uint64_t key, const vector<int> &labels,
     //uint64_t bitset_keys = GetBlock48BitKeys(key);
     for (int i = 0; i < 48; i++) {
       if (bitset_keys.test(i)) {
-      //if ((bitset_keys & (1i64 << i)) != 0) {
+        //if ((bitset_keys & (1i64 << i)) != 0) {
         std::vector<LabelWeights>::const_iterator label_weights =
           FindFeatureKeyVector(feature_key_vector, i + 48 * current_64bitword_offset);
         if (label_weights == (*feature_key_vector).end()) {

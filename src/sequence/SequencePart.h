@@ -113,11 +113,6 @@ public:
   {};
   virtual ~SequenceParts() {
     DeleteAll();
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS 1
-    unigram_pool_.Cleanup();
-    bigram_pool_.Cleanup();
-    trigram_pool_.Cleanup();
-#endif
   };
   void Initialize() {
     DeleteAll();
@@ -162,7 +157,7 @@ public:
 #else
     return new SequencePartTrigram(position, tag, tag_left, tag_left_left);
 #endif
-  }
+}
 
 public:
   void DeleteAll();

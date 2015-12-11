@@ -28,14 +28,15 @@ void SequenceParts::DeleteAll() {
   for (iterator iter = begin(); iter != end(); iter++) {
     if ((*iter) != NULL) {
 #if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS 1
-      if ((*iter)->type == SEQUENCEPART_UNIGRAM) {
-        SequencePartUnigram * spu = static_cast<SequencePartUnigram *>((*iter));
+      Part * part = (*iter);
+      if (part->type() == SEQUENCEPART_UNIGRAM) {
+        SequencePartUnigram * spu = static_cast<SequencePartUnigram *>(part);
         spu->SequencePartUnigram::~SequencePartUnigram();
-      } else if ((*iter)->type == SEQUENCEPART_BIGRAM) {
-        SequencePartBigram * spb = static_cast<SequencePartBigram *>((*iter));
+      } else if (part->type() == SEQUENCEPART_BIGRAM) {
+        SequencePartBigram * spb = static_cast<SequencePartBigram *>(part);
         spb->SequencePartBigram::~SequencePartBigram();
-      }if ((*iter)->type == SEQUENCEPART_TRIGRAM) {
-        SequencePartTrigram * spt = static_cast<SequencePartTrigram *>((*iter));
+      } else if (part->type() == SEQUENCEPART_TRIGRAM) {
+        SequencePartTrigram * spt = static_cast<SequencePartTrigram *>(part);
         spt->SequencePartTrigram::~SequencePartTrigram();
       }
 #else
@@ -46,6 +47,12 @@ void SequenceParts::DeleteAll() {
   }
 
   clear();
+
+#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS 1
+  unigram_pool_.Cleanup();
+  bigram_pool_.Cleanup();
+  trigram_pool_.Cleanup();
+#endif
 }
 
 void SequenceParts::DeleteUnigramIndices() {

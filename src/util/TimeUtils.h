@@ -19,7 +19,6 @@
 #ifndef TIMEUTILS_H
 #define TIMEUTILS_H
 
-
 #include <chrono>
 
 #ifdef _WIN32
@@ -44,11 +43,10 @@ extern int diff_ms(timeval t1, timeval t2);
 
 extern int diff_us(timeval t1, timeval t2);
 
-
 class Chronometer {
-public: 
-  Chronometer() { 
-    time_span = std::chrono::steady_clock::duration::zero(); 
+public:
+  Chronometer() {
+    time_span = std::chrono::steady_clock::duration::zero();
   };
   virtual ~Chronometer() {};
 
