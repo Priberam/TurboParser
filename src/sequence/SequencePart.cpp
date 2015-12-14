@@ -27,7 +27,7 @@ void SequenceParts::DeleteAll() {
 
   for (iterator iter = begin(); iter != end(); iter++) {
     if ((*iter) != NULL) {
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
       Part * part = (*iter);
       if (part->type() == SEQUENCEPART_UNIGRAM) {
         SequencePartUnigram * spu = static_cast<SequencePartUnigram *>(part);
@@ -48,7 +48,7 @@ void SequenceParts::DeleteAll() {
 
   clear();
 
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
   unigram_pool_.Cleanup();
   bigram_pool_.Cleanup();
   trigram_pool_.Cleanup();

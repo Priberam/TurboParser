@@ -23,9 +23,9 @@
 #include <vector>
 #include "Part.h"
 
-#define USE_MEMORY_POOl_FOR_SEQUENCE_PARTS 1
+#define USE_MEMORY_POOL_FOR_SEQUENCE_PARTS 1
 
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
 #include "MemPool.h"
 #endif
 
@@ -107,7 +107,7 @@ private:
 class SequenceParts : public Parts {
 public:
   SequenceParts()
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
     : unigram_pool_(), bigram_pool_(), trigram_pool_()
 #endif
   {};
@@ -122,7 +122,7 @@ public:
   };
 
   Part *CreatePartUnigram(int position, int tag) {
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
     // First, raw memory is requested from the memory pool
     SequencePartUnigram * get_allocated_part = (SequencePartUnigram *)unigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
@@ -134,7 +134,7 @@ public:
 #endif
   }
   Part *CreatePartBigram(int position, int tag, int tag_left) {
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
     // First, raw memory is requested from the memory pool
     SequencePartBigram * get_allocated_part = (SequencePartBigram *)bigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
@@ -147,7 +147,7 @@ public:
   }
   Part *CreatePartTrigram(int position, int tag, int tag_left,
                           int tag_left_left) {
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
     // First, raw memory is requested from the memory pool
     SequencePartTrigram * get_allocated_part = (SequencePartTrigram *)trigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
@@ -228,7 +228,7 @@ private:
   vector<vector<int> >  index_trigrams_;
   int offsets_[NUM_SEQUENCEPARTS];
 
-#if USE_MEMORY_POOl_FOR_SEQUENCE_PARTS == 1
+#if USE_MEMORY_POOL_FOR_SEQUENCE_PARTS == 1
   MemPool<SequencePartUnigram> unigram_pool_;
   MemPool<SequencePartBigram> bigram_pool_;
   MemPool<SequencePartTrigram> trigram_pool_;
