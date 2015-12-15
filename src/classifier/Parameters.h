@@ -118,10 +118,19 @@ public:
            vector<double> *label_scores) const {
     return labeled_weights_.Get(key, labels, label_scores);
   }
+  const LabelWeights* GetLabelWeights(uint64_t key) const {
+    return labeled_weights_.GetLabelWeights(key);
+  }
 
   // Get the squared norm of the parameter vector.
   double GetSquaredNorm() const {
     return weights_.GetSquaredNorm() + labeled_weights_.GetSquaredNorm();
+  }
+
+
+  // Get the squared norm of the parameter vector.
+  double GetScaleFactor() const {
+    return labeled_weights_.GetScaleFactor();
   }
 
   // Compute the score corresponding to a set of "simple" features.

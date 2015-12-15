@@ -21,7 +21,6 @@
 
 #include "SequenceFeatures.h"
 #include "FeatureEncoder.h"
-#include "EntityFeatureEncoder.h"
 #include "EntityInstanceNumeric.h"
 
 typedef std::vector<BinaryFeatures*> MultiBinaryFeatures;
@@ -47,8 +46,7 @@ protected:
   }
 
 protected:
-  // Encoder that converts features into a codeword.
-  EntityFeatureEncoder encoder_;
+  FeatureEncoder encoder_; // Encoder that converts features into a codeword.
 };
 
 #endif /* ENTITYFEATURES_H_ */

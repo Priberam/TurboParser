@@ -123,16 +123,28 @@ void SequencePipe::ComputeScores(Instance *instance,
         const BinaryFeatures &unigram_features =
           sequence_features->GetUnigramFeatures(i);
         for (auto& feature : unigram_features) {
-          auto cache_it = unigram_features_scores_cache.find(feature);
-          if (cache_it == unigram_features_scores_cache.end()) {
-            auto ins = unigram_features_scores_cache.insert({ feature, {} });
-            ins.first->second.resize(all_tags.size());
-            parameters_->Get(feature,
-                             all_tags,
-                             &ins.first->second);
-            UpdateLocalScore(ins.first->second, &sentence_scores[i]);
-          } else {
-            UpdateLocalScore(cache_it->second, &sentence_scores[i]);
+
+          ////****
+          //auto cache_it = unigram_features_scores_cache.find(feature);
+          //if (cache_it == unigram_features_scores_cache.end()) {
+          //  auto ins = unigram_features_scores_cache.insert({ feature,{} });
+          //  ins.first->second.resize(all_tags.size());
+          //  parameters_->Get(feature,
+          //                   all_tags,
+          //                   &ins.first->second);
+          //  UpdateLocalScore(ins.first->second, &sentence_scores[i]);
+
+          //} else {
+          //  UpdateLocalScore(cache_it->second, &sentence_scores[i]);
+
+          //}
+          ////****
+
+
+          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+
+          if (label_scores) {
+            label_scores->UpdateLocalScore(&sentence_scores[i], parameters_->GetScaleFactor());
           }
         }
       }
@@ -154,7 +166,6 @@ void SequencePipe::ComputeScores(Instance *instance,
       std::vector<int> all_bigram_tags(std::pow(sequence_dictionary->GetTagAlphabet().size() + 1, 2));
       for (int i = 0; i < all_bigram_tags.size(); ++i)
         all_bigram_tags[i] = i;
-
       std::vector < std::vector<double> >  bigram_sentence_scores;
       bigram_sentence_scores.resize(sentence->size() + 1);
       for (int i = 0; i < sentence->size() + 1; ++i) {
@@ -162,17 +173,9 @@ void SequencePipe::ComputeScores(Instance *instance,
         const BinaryFeatures &bigram_features =
           sequence_features->GetBigramFeatures(i);
         for (auto& feature : bigram_features) {
-          auto cache_it = bigram_features_scores_cache.find(feature);
-          if (cache_it == bigram_features_scores_cache.end()) {
-            auto ins = bigram_features_scores_cache.insert({ feature,{} });
-            ins.first->second.resize(all_bigram_tags.size());
-            parameters_->Get(feature,
-                             all_bigram_tags,
-                             &ins.first->second);
-            UpdateLocalScore(ins.first->second, &bigram_sentence_scores[i]);
-          } else {
-            UpdateLocalScore(cache_it->second, &bigram_sentence_scores[i]);
-          }
+          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+          if (label_scores)
+            label_scores->UpdateLocalScore(&bigram_sentence_scores[i], parameters_->GetScaleFactor());
         }
       }
 
@@ -182,7 +185,7 @@ void SequencePipe::ComputeScores(Instance *instance,
         if (part->type() == SEQUENCEPART_TRIGRAM) { break; }
         SequencePartBigram *bigram =
           static_cast<SequencePartBigram*>(part);
-        (*scores)[i] = 
+        (*scores)[i] =
           ((bigram_sentence_scores[bigram->position()]))[
             sequence_dictionary->GetBigramLabel(bigram->tag_left(), bigram->tag())];
         i++;

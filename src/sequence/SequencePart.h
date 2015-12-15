@@ -157,7 +157,7 @@ public:
 #else
     return new SequencePartTrigram(position, tag, tag_left, tag_left_left);
 #endif
-}
+  }
 
 public:
   void DeleteAll();

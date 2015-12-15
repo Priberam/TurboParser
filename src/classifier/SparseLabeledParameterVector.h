@@ -31,13 +31,14 @@
 #endif
 #endif
 #include "SerializationUtils.h"
+#include <algorithm>
 
 using namespace std;
 
 // Threshold for renormalizing the parameter vector.
 const double kLabeledScaleFactorThreshold = 1e-9;
 // After more than kNumMaxSparseLabels labels, use a dense representation.
-const int kNumMaxSparseLabels = 5;
+const int kNumMaxSparseLabels = 20;
 
 // This class contains the weights for every label conjoined with a single
 // feature. This is a pure virtual class, so that we can derive from it a
@@ -75,7 +76,6 @@ public:
                       double weight);
   void AddWeight(int label,
                  double weight);
-
 
   double SparseSetWeightAndNormalize(int label,
                                      double value,
@@ -118,6 +118,7 @@ public:
   void ChangeToDenseLabelWeights();
   void SetDenseMode();
   void ClearSparseData();
+  void UpdateLocalScore(std::vector<double>* to, double multiplier) const;
 
 protected:
   bool dense_mode;
@@ -173,14 +174,19 @@ public:
   // True if this feature key is already instantiated.
   bool Exists(uint64_t key) const;
 
-
   // Get the weights for the specified labels. Returns false if no key was
   // found, in which case weights becomes empty.
   bool Get(uint64_t key, const vector<int> &labels,
            vector<double> *weights) const;
 
+  //Get the reference to the LabelWeights vector from feature key
+  const LabelWeights* GetLabelWeights(uint64_t key) const;
+
   // Get squared norm of the parameter vector.
   double GetSquaredNorm() const;
+
+  // Get the scale factor the parameter vector.
+  double GetScaleFactor() const;
 
   // Scale the weight vector by a factor scale_factor.
   // w_k' = w_k * c_k
@@ -219,24 +225,6 @@ public:
 protected:
 
   uint64_t SparseLabeledParameterVector::GetMapSize() const;
-  uint64_t SparseLabeledParameterVector::GetMatrixSize() const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFamilyFeatureVectorSize() const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(int x) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(const vector<LabelWeights>&  feature_key_vector) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixFeatureKeyVectorSize(std::vector<std::vector<LabelWeights>>::const_iterator ptr_to_feature_key_vector) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(int x, int y) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(LabelWeights & label_weights_vector) const;
-  uint64_t SparseLabeledParameterVector::GetMatrixLabelWeightsVectorSize(std::vector<LabelWeights>::const_iterator ptr_to_label_weights_vector) const;
-
-  bool isHashMapKey(uint64_t key) const;
-  bool isMatrixMapKey(uint64_t key) const;
-  bool isMulti64bitKey(uint64_t key) const;
-  uint64_t GetFamilyFeatureKey(uint64_t key) const;
-  uint64_t GetBlock48BitKeys(uint64_t key) const;
-  uint64_t GetTuple3_5BitKeys(uint64_t key) const;
-  uint64_t GetTuple6_8BitKeys(uint64_t key) const;
-  uint64_t GetMultiKeyCardinalityBitKeys(uint64_t key) const;
-  uint64_t GetMultiKeyCurrentOffsetBitKeys(uint64_t key) const;
 
   // Get the weights for the specified labels.
   void GetValues(LabeledParameterMap::const_iterator iterator,
@@ -246,9 +234,6 @@ protected:
   void GetValues(std::vector<LabelWeights>::const_iterator iterator,
                  const vector<int> &labels,
                  vector<double> *values) const;
-  void GetValuesAndUpdate(std::vector<LabelWeights>::const_iterator iterator,
-                          const vector<int> &labels,
-                          vector<double> *values) const;
 
   // Get the weight for the specified label.
   // Two versions of this function: one using a const_iterator,
@@ -272,7 +257,6 @@ protected:
                 int label,
                 double value);
 
-
   // Add weight for the specified label.
   void AddValue(LabeledParameterMap::iterator iterator,
                 int label,
@@ -285,19 +269,6 @@ protected:
   // Find a key, or insert it in case it does not exist.
   LabeledParameterMap::iterator FindOrInsert(uint64_t key);
 
-  std::vector<std::vector<LabelWeights>>::const_iterator FindFamilyFeatureVector(uint64_t key) const;
-  std::vector<std::vector<LabelWeights>>::iterator FindOrResizeFamilyFeatureVector(uint64_t key);
-
-  std::vector<LabelWeights>::const_iterator FindFeatureKeyVector(
-    std::vector<std::vector<LabelWeights>>::const_iterator feature_key_vector,
-    uint64_t index) const;
-  std::vector<LabelWeights>::iterator FindOrResizeFeatureKeyVector(
-    std::vector<std::vector<LabelWeights>>::iterator feature_key_vector,
-    uint64_t index);
-  void SparseLabeledParameterVector::ResizeFeatureKeyVector(
-    std::vector<std::vector<LabelWeights>>::iterator feature_key_vector, uint64_t size);
-
-
   // If the scale factor is too small, renormalize the entire parameter map.
   void RenormalizeIfNecessary();
 
@@ -306,7 +277,6 @@ protected:
 
 protected:
   LabeledParameterMap map_values_; // Weight values, up to a scale. Hash-table-based storage.
-  vector<vector<LabelWeights>> matrix_values_; // Weight values, up to a scale. Vector-based storage.
   double scale_factor_; // The scale factor, such that w = values * scale.
   double squared_norm_; // The squared norm of the parameter vector.
   bool growth_stopped_; // True if parameters are locked.
