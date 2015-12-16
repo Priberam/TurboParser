@@ -83,10 +83,11 @@ void SequencePipe::PreprocessData() {
 }
 
 #if USE_FEATURES_SCORES_CACHE == 1
-void UpdateLocalScore(const std::vector<double> & from, std::vector<double>* to) {
-  if (to->size() < from.size())
-    to->resize(from.size(), 0);
-  for (int i = 0; i < from.size(); i++)
+void UpdatePartialScore(const std::vector<double> & from, std::vector<double>* to) {
+  int from_size = from.size();
+  if (to->size() < from_size)
+    to->resize(from_size, 0);
+  for (int i = 0; i < from_size; i++)
     (*to)[i] += from[i];
 }
 typedef std::unordered_map<uint64_t, std::vector<double>> FeatureLabelScoresHashMap;
@@ -110,12 +111,12 @@ void SequencePipe::ComputeScores(Instance *instance,
   SequenceDictionary *sequence_dictionary = GetSequenceDictionary();
   scores->resize(parts->size());
 
+#if USE_FEATURES_SCORES_CACHE == 1
+  double scale_factor = parameters_->GetScaleFactor();
+#endif
 #if USE_UNIGRAM_FEATURES_SCORES_CACHE == 1
   if (FLAGS_test) {
     {
-      std::vector<int> all_tags(sequence_dictionary->GetTagAlphabet().size());
-      for (int i = 0; i < all_tags.size(); ++i)
-        all_tags[i] = i;
       std::vector < std::vector<double> >  sentence_scores;
       sentence_scores.resize(sentence->size());
       for (int i = 0; i < sentence->size(); ++i) {
@@ -123,39 +124,30 @@ void SequencePipe::ComputeScores(Instance *instance,
         const BinaryFeatures &unigram_features =
           sequence_features->GetUnigramFeatures(i);
         for (auto& feature : unigram_features) {
-
-          ////****
-          //auto cache_it = unigram_features_scores_cache.find(feature);
-          //if (cache_it == unigram_features_scores_cache.end()) {
-          //  auto ins = unigram_features_scores_cache.insert({ feature,{} });
-          //  ins.first->second.resize(all_tags.size());
-          //  parameters_->Get(feature,
-          //                   all_tags,
-          //                   &ins.first->second);
-          //  UpdateLocalScore(ins.first->second, &sentence_scores[i]);
-
-          //} else {
-          //  UpdateLocalScore(cache_it->second, &sentence_scores[i]);
-
-          //}
-          ////****
-
-
-          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
-
-          if (label_scores) {
-            label_scores->UpdateLocalScore(&sentence_scores[i], parameters_->GetScaleFactor());
+          auto cache_it = unigram_features_scores_cache.find(feature);
+          if (cache_it == unigram_features_scores_cache.end()) {
+            auto ins = unigram_features_scores_cache.insert({ feature,{} });
+            //ins.first->second.resize(sequence_dictionary->GetTagAlphabet().size(), 0.0);
+            const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+            if (label_scores) {
+              //Add partial score to sentence scores
+              label_scores->UpdateExternalPartialScore(&sentence_scores[i], scale_factor);
+              //Store feature scores in cache
+              label_scores->UpdateExternalPartialScore(&ins.first->second, scale_factor);
+            }
+          } else {
+            //Load feature scores from cache
+            UpdatePartialScore(cache_it->second, &sentence_scores[i]);
           }
         }
       }
 
-      int i = 0;
-      for (auto part : *parts) {
-        if (part->type() == SEQUENCEPART_BIGRAM) { break; }
-        SequencePartUnigram *unigram =
-          static_cast<SequencePartUnigram*>(part);
+      int first_part = (sequence_parts->FindUnigramParts(0)).front();
+      int last_part = (sequence_parts->FindUnigramParts(sentence->size() - 1)).back();
+      for (int i = first_part; i <= last_part; i++) {
+        Part *part = (*parts)[i];
+        SequencePartUnigram *unigram = static_cast<SequencePartUnigram*>(part);
         (*scores)[i] = ((sentence_scores[unigram->position()]))[unigram->tag()];
-        i++;
       }
     }
   }
@@ -163,9 +155,6 @@ void SequencePipe::ComputeScores(Instance *instance,
 #if  USE_BIGRAM_FEATURES_SCORES_CACHE == 1
   if (FLAGS_test) {
     if (GetSequenceOptions()->markov_order() >= 1) {
-      std::vector<int> all_bigram_tags(std::pow(sequence_dictionary->GetTagAlphabet().size() + 1, 2));
-      for (int i = 0; i < all_bigram_tags.size(); ++i)
-        all_bigram_tags[i] = i;
       std::vector < std::vector<double> >  bigram_sentence_scores;
       bigram_sentence_scores.resize(sentence->size() + 1);
       for (int i = 0; i < sentence->size() + 1; ++i) {
@@ -173,22 +162,31 @@ void SequencePipe::ComputeScores(Instance *instance,
         const BinaryFeatures &bigram_features =
           sequence_features->GetBigramFeatures(i);
         for (auto& feature : bigram_features) {
-          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
-          if (label_scores)
-            label_scores->UpdateLocalScore(&bigram_sentence_scores[i], parameters_->GetScaleFactor());
+          auto cache_it = bigram_features_scores_cache.find(feature);
+          if (cache_it == bigram_features_scores_cache.end()) {
+            auto ins = bigram_features_scores_cache.insert({ feature,{} });
+            //ins.first->second.resize(std::pow(sequence_dictionary->GetTagAlphabet().size() + 1, 2), 0.0);
+            const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+            if (label_scores) {
+              //Add partial score to sentence scores
+              label_scores->UpdateExternalPartialScore(&bigram_sentence_scores[i], scale_factor);
+              //Store feature scores in cache
+              label_scores->UpdateExternalPartialScore(&ins.first->second, scale_factor);
+            }
+          } else {
+            UpdatePartialScore(cache_it->second, &bigram_sentence_scores[i]);
+          }
         }
       }
 
-      int i = 0;
-      for (auto part : *parts) {
-        if (part->type() == SEQUENCEPART_UNIGRAM) { i++; continue; }
-        if (part->type() == SEQUENCEPART_TRIGRAM) { break; }
-        SequencePartBigram *bigram =
-          static_cast<SequencePartBigram*>(part);
+      int first_part = (sequence_parts->FindBigramParts(0)).front();
+      int last_part = (sequence_parts->FindBigramParts(sentence->size())).back();
+      for (int i = first_part; i <= last_part; i++) {
+        Part *part = (*parts)[i];
+        SequencePartBigram *bigram = static_cast<SequencePartBigram*>(part);
         (*scores)[i] =
           ((bigram_sentence_scores[bigram->position()]))[
             sequence_dictionary->GetBigramLabel(bigram->tag_left(), bigram->tag())];
-        i++;
       }
     }
   }

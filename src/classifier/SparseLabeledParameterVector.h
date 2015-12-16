@@ -38,7 +38,7 @@ using namespace std;
 // Threshold for renormalizing the parameter vector.
 const double kLabeledScaleFactorThreshold = 1e-9;
 // After more than kNumMaxSparseLabels labels, use a dense representation.
-const int kNumMaxSparseLabels = 20;
+const int kNumMaxSparseLabels = 5;
 
 // This class contains the weights for every label conjoined with a single
 // feature. This is a pure virtual class, so that we can derive from it a
@@ -47,7 +47,10 @@ const int kNumMaxSparseLabels = 20;
 // use the dense variant, while the others use the sparse variant.
 class LabelWeights {
 public:
-  LabelWeights() {};
+  LabelWeights() {
+    if (kNumMaxSparseLabels == 0)
+      SetDenseMode();
+  };
   ~LabelWeights() {};
 
   // True if set of labels is sparse.
@@ -118,7 +121,7 @@ public:
   void ChangeToDenseLabelWeights();
   void SetDenseMode();
   void ClearSparseData();
-  void UpdateLocalScore(std::vector<double>* to, double multiplier) const;
+  void UpdateExternalPartialScore(std::vector<double>* to, double multiplier) const;
 
 protected:
   bool dense_mode;

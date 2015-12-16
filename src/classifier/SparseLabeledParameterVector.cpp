@@ -69,7 +69,6 @@ double LabelWeights::GetWeight(int label) const {
   }
 }
 
-
 void LabelWeights::SparseSetWeight(int label, double weight) {
   for (int k = 0; k < sparse_label_weights_.size(); ++k) {
     if (label == sparse_label_weights_[k].first) {
@@ -263,18 +262,20 @@ void LabelWeights::ClearSparseData() {
   sparse_label_weights_.clear();
 }
 
-void LabelWeights::UpdateLocalScore(std::vector<double>* to, double multiplier) const {
+void LabelWeights::UpdateExternalPartialScore(std::vector<double>* to,
+                                              double multiplier) const {
   if (IsSparse()) {
     int size = sparse_label_weights_.size();
-    auto find = std::max_element(begin(sparse_label_weights_), end(sparse_label_weights_),
-                                 [](const std::pair<int, double>& pairA, const std::pair<int, double>& pairB) {
+    auto find = std::max_element(begin(sparse_label_weights_),
+                                 end(sparse_label_weights_),
+                                 [](const std::pair<int, double>& pairA,
+                                    const std::pair<int, double>& pairB) {
       return pairA.first < pairB.first;
-    }
-    );
+    });
 
     int new_size = (*find).first + 1;
     if (to->size() < new_size)
-      to->resize(new_size, 0);
+      to->resize(new_size, 0.0);
     for (int i = 0; i < size; i++) {
       const std::pair<int, double> & pair = sparse_label_weights_[i];
       (*to)[pair.first] += pair.second * multiplier;
@@ -282,7 +283,7 @@ void LabelWeights::UpdateLocalScore(std::vector<double>* to, double multiplier) 
   } else {
     int size = dense_label_weights_.size();
     if (to->size() < size)
-      to->resize(size, 0);
+      to->resize(size, 0.0);
     for (int i = 0; i < size; i++)
       (*to)[i] += dense_label_weights_[i] * multiplier;
   }
@@ -412,7 +413,6 @@ const LabelWeights* SparseLabeledParameterVector::GetLabelWeights(uint64_t key) 
     return NULL;
   }
   return &iterator->second;
-
 }
 
 double SparseLabeledParameterVector::GetSquaredNorm() const {
