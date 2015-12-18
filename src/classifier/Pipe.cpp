@@ -141,6 +141,48 @@ void Pipe::RemoveUnsupportedFeatures(Instance *instance, Parts *parts,
   }
 }
 
+void Pipe::MakePopularFeatures() {
+  int num_instances = instances_.size();
+  {
+    Instance *instance;
+    Parts *parts = CreateParts();
+    Features *features = CreateFeatures();
+    vector<double> gold_outputs;
+
+    parameters_->find_popular_keys = true;
+    //First pass over the data to discover most popular features (count them).
+    for (int i = 0; i < num_instances; i++) {
+      instance = instances_[i];
+      MakeParts(instance, parts, &gold_outputs);
+      MakeFeatures(instance, parts, features);
+    }
+    delete parts;
+    delete features;
+
+    parameters_->GetPopularFeaturesStats();
+    parameters_->find_popular_keys = false;
+  }
+  {
+    Instance *instance;
+    Parts *parts = CreateParts();
+    Features *features = CreateFeatures();
+    vector<double> gold_outputs;
+
+    parameters_->process_popular_keys = true;
+    //Knowing the most popular, we can now combine them according to occurrences
+    //of combinations of popular features in the same gram.
+    for (int i = 0; i < num_instances; i++) {
+      instance = instances_[i];
+      MakeParts(instance, parts, &gold_outputs);
+      MakeFeatures(instance, parts, features);
+    }
+    delete parts;
+    delete features;
+
+    parameters_->process_popular_keys = false;
+  }
+}
+
 void Pipe::Train() {
   PreprocessData();
   CreateInstances();
@@ -153,6 +195,8 @@ void Pipe::Train() {
   }
 
   parameters_->Finalize(options_->GetNumEpochs() * instances_.size());
+
+  MakePopularFeatures();
 }
 
 void Pipe::CreateInstances() {

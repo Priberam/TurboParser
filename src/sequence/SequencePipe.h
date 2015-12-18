@@ -32,8 +32,11 @@
 
 class SequencePipe : public Pipe {
 public:
-  SequencePipe(Options* options) : Pipe(options) { token_dictionary_ = NULL; }
-  virtual ~SequencePipe() { delete token_dictionary_; }
+  SequencePipe(Options* options) : Pipe(options) { num_features = 0; token_dictionary_ = NULL; }
+  virtual ~SequencePipe() {
+    LOG(INFO) << num_features;
+    delete token_dictionary_;
+  }
 
   SequenceReader *GetSequenceReader() {
     return static_cast<SequenceReader*>(reader_);
@@ -163,6 +166,7 @@ protected:
   int num_tag_mistakes_;
   int num_tokens_;
   timeval start_clock_;
+  int num_features;
 };
 
 #endif /* SEQUENCEPIPE_H_ */

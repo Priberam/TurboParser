@@ -23,6 +23,14 @@
 #include "SparseParameterVector.h"
 #include "SparseLabeledParameterVector.h"
 #include "Utils.h"
+#include <array>
+#include <bitset>
+
+#define NUM_SPECIAL_KEYS 48
+using key_64bits_t = uint64_t;
+using occurrences_counter_t = uint64_t;
+using index_t = uint64_t;
+using bitmap_64bits_t = uint64_t;
 
 // This class implements a feature vector, which is convenient to sum over
 // binary features, weight them, etc. It just uses the classes
@@ -61,6 +69,11 @@ class Parameters {
 public:
   Parameters() {
     use_average_ = true;
+
+    add_unigram_features_calls_w_special_key = 0;
+    add_unigram_features_calls = 0;
+    find_popular_keys = false;
+    process_popular_keys = false;
   };
   virtual ~Parameters() {};
 
@@ -126,7 +139,6 @@ public:
   double GetSquaredNorm() const {
     return weights_.GetSquaredNorm() + labeled_weights_.GetSquaredNorm();
   }
-
 
   // Get the squared norm of the parameter vector.
   double GetScaleFactor() const {
@@ -223,6 +235,38 @@ public:
     }
   }
 
+  void Parameters::GetPopularFeaturesStats() {
+    std::vector<std::pair<key_64bits_t, occurrences_counter_t>> sorted_featurekeys;
+    for (std::unordered_map<key_64bits_t, occurrences_counter_t>::iterator iterator =
+         featurekeys_occurrences_counter.begin();
+         iterator != featurekeys_occurrences_counter.end();
+         iterator++) {
+      sorted_featurekeys.push_back({ (*iterator).first, (*iterator).second });
+    }
+
+    std::sort(begin(sorted_featurekeys),
+              end(sorted_featurekeys),
+              [](const std::pair<key_64bits_t, occurrences_counter_t>& pairA,
+                 const std::pair<key_64bits_t, occurrences_counter_t>& pairB) {
+      return pairA.second > pairB.second;
+    });
+    key_64bits_t and_key = 0xffffffffffffffff;
+    or_key = 0;
+    xor_key = 0;
+    for (int i = 0; i < NUM_SPECIAL_KEYS; i++) {
+      //      popular_keys[i] = sorted_featurekeys[i].first;
+      popular_keys[i] = std::pair< key_64bits_t, index_t>({ sorted_featurekeys[i].first , i });
+      or_key |= sorted_featurekeys[i].first;
+      xor_key ^= sorted_featurekeys[i].first;
+      and_key &= sorted_featurekeys[i].first;
+      //      popular_keys_index_in_bitset.insert({ sorted_featurekeys[i].first , i });
+    }
+
+    LOG(INFO) << "and_key = " << and_key;
+    LOG(INFO) << "xor_key = " << xor_key;
+    LOG(INFO) << "or_key = " << or_key;
+  }
+
 protected:
   // Average the parameters as in averaged perceptron.
   bool use_average_;
@@ -234,6 +278,20 @@ protected:
   // Weights and averaged weights for the "labeled" features.
   SparseLabeledParameterVector labeled_weights_;
   SparseLabeledParameterVector averaged_labeled_weights_;
+
+public:
+  std::unordered_map<key_64bits_t, occurrences_counter_t> featurekeys_occurrences_counter;
+  std::array<std::pair< key_64bits_t, index_t>, NUM_SPECIAL_KEYS> popular_keys;
+  //  std::unordered_map< key_64bits_t, index_t> popular_keys_index_in_bitset;
+  bool find_popular_keys;
+  bool process_popular_keys;
+  std::unordered_map<bitmap_64bits_t, occurrences_counter_t> popular_keybitmap_occurrences_counter;
+  std::unordered_map<bitmap_64bits_t, key_64bits_t> popular_keybitmap_generated_key;
+  int add_unigram_features_calls_w_special_key;
+  int add_unigram_features_calls;
+
+  key_64bits_t or_key;
+  key_64bits_t xor_key;
 };
 
 #endif /*PARAMETERS_H_*/

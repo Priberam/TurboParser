@@ -27,22 +27,22 @@ struct EntityFeatureTemplateParts {
   };
 };
 
-//struct EntityFeatureFamiliesTemplate {
-//  enum types {
-//    None = 0,
-//    Word,
-//    Gazetteer,
-//    POS,
-//    Suffix,
-//    Prefix,
-//    Shape,
-//    COUNT
-//  };
-//};
+struct EntityFeatureFamiliesTemplate {
+  enum types {
+    None = 0,
+    Word,
+    Gazetteer,
+    POS,
+    Suffix,
+    Prefix,
+    Shape,
+    COUNT
+  };
+};
 
 struct EntityFeatureTemplateUnigram {
   enum types {
-    BIAS = 0,   /* bias */                                            //WORD
+    BIAS = 1,   /* bias */                                            //WORD
     W,          /* word */                                            //WORD
     pW,         /* word on the left */                                //CONTEXT
     nW,         /* word on the right */                               //CONTEXT
@@ -104,4 +104,5 @@ struct EntityFeatureTemplateTrigram {
   static const  int size = EntityFeatureTemplateTrigram::COUNT - EntityFeatureTemplateBigram::COUNT;
 };
 
+const int32_t KeyFeatureCombination = EntityFeatureTemplateTrigram::COUNT;
 #endif /* ENTITYFEATURETEMPLATES_H_ */

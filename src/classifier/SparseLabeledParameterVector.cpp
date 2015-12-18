@@ -289,6 +289,20 @@ void LabelWeights::UpdateExternalPartialScore(std::vector<double>* to,
   }
 }
 
+void LabelWeights::CopyToExternalLabelWeights(LabelWeights* to) const {
+  if (IsSparse()) {
+    int size = sparse_label_weights_.size();
+    for (int i = 0; i < size; i++) {
+      const std::pair<int, double> & pair = sparse_label_weights_[i];
+      (*to).AddWeight(pair.first, pair.second);
+    }
+  } else {
+    int size = dense_label_weights_.size();
+    for (int i = 0; i < size; i++)
+      (*to).AddWeight(i, dense_label_weights_[i]);
+  }
+}
+
 // Lock/unlock the parameter vector. If the vector is locked, no new features
 // can be inserted.
 void SparseLabeledParameterVector::StopGrowth() { growth_stopped_ = true; }
@@ -441,6 +455,12 @@ bool SparseLabeledParameterVector::Set(uint64_t key,
   } else {
     return false;
   }
+}
+
+void SparseLabeledParameterVector::Set(uint64_t key,
+                                       const LabelWeights &labels_weights) {
+  LabeledParameterMap::iterator iterator = FindOrInsert(key);
+  labels_weights.CopyToExternalLabelWeights(&(*iterator).second);
 }
 
 bool SparseLabeledParameterVector::Add(uint64_t key,

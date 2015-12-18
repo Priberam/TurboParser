@@ -114,6 +114,7 @@ void SequencePipe::ComputeScores(Instance *instance,
 #if USE_FEATURES_SCORES_CACHE == 1
   double scale_factor = parameters_->GetScaleFactor();
 #endif
+
 #if USE_UNIGRAM_FEATURES_SCORES_CACHE == 1
   if (FLAGS_test) {
     {
@@ -123,21 +124,15 @@ void SequencePipe::ComputeScores(Instance *instance,
         // Conjoin unigram features with the tag.
         const BinaryFeatures &unigram_features =
           sequence_features->GetUnigramFeatures(i);
+        num_features += unigram_features.size();
         for (auto& feature : unigram_features) {
-          auto cache_it = unigram_features_scores_cache.find(feature);
-          if (cache_it == unigram_features_scores_cache.end()) {
-            auto ins = unigram_features_scores_cache.insert({ feature,{} });
-            //ins.first->second.resize(sequence_dictionary->GetTagAlphabet().size(), 0.0);
-            const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
-            if (label_scores) {
-              //Add partial score to sentence scores
-              label_scores->UpdateExternalPartialScore(&sentence_scores[i], scale_factor);
-              //Store feature scores in cache
-              label_scores->UpdateExternalPartialScore(&ins.first->second, scale_factor);
-            }
-          } else {
-            //Load feature scores from cache
-            UpdatePartialScore(cache_it->second, &sentence_scores[i]);
+          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+          if (label_scores) {
+            //Add partial score to sentence scores
+            label_scores->UpdateExternalPartialScore(&sentence_scores[i], scale_factor);
+            //Store feature scores in cache
+
+          //Load feature scores from cache
           }
         }
       }
@@ -162,19 +157,13 @@ void SequencePipe::ComputeScores(Instance *instance,
         const BinaryFeatures &bigram_features =
           sequence_features->GetBigramFeatures(i);
         for (auto& feature : bigram_features) {
-          auto cache_it = bigram_features_scores_cache.find(feature);
-          if (cache_it == bigram_features_scores_cache.end()) {
-            auto ins = bigram_features_scores_cache.insert({ feature,{} });
-            //ins.first->second.resize(std::pow(sequence_dictionary->GetTagAlphabet().size() + 1, 2), 0.0);
-            const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
-            if (label_scores) {
-              //Add partial score to sentence scores
-              label_scores->UpdateExternalPartialScore(&bigram_sentence_scores[i], scale_factor);
-              //Store feature scores in cache
-              label_scores->UpdateExternalPartialScore(&ins.first->second, scale_factor);
-            }
-          } else {
-            UpdatePartialScore(cache_it->second, &bigram_sentence_scores[i]);
+          //ins.first->second.resize(std::pow(sequence_dictionary->GetTagAlphabet().size() + 1, 2), 0.0);
+          const LabelWeights *label_scores = parameters_->GetLabelWeights(feature);
+          if (label_scores) {
+            //Add partial score to sentence scores
+            label_scores->UpdateExternalPartialScore(&bigram_sentence_scores[i], scale_factor);
+            //Store feature scores in cache
+            //label_scores->UpdateExternalPartialScore(&ins.first->second, scale_factor);
           }
         }
       }

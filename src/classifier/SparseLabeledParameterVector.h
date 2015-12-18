@@ -122,6 +122,7 @@ public:
   void SetDenseMode();
   void ClearSparseData();
   void UpdateExternalPartialScore(std::vector<double>* to, double multiplier) const;
+  void CopyToExternalLabelWeights(LabelWeights* to) const;
 
 protected:
   bool dense_mode;
@@ -199,6 +200,9 @@ public:
   // Return false if the feature is not instantiated and cannot be inserted.
   // w'[id] = val
   bool Set(uint64_t key, int label, double value);
+
+  // Set the weights conjoined with the labels of this feature key.
+  void Set(uint64_t key, const LabelWeights &labels_weights);
 
   // Increment the weight of this feature key conjoined with this label by an
   // amount of "value".
@@ -280,6 +284,7 @@ protected:
 
 protected:
   LabeledParameterMap map_values_; // Weight values, up to a scale. Hash-table-based storage.
+  LabeledParameterMap most_frequent_keys;
   double scale_factor_; // The scale factor, such that w = values * scale.
   double squared_norm_; // The squared norm of the parameter vector.
   bool growth_stopped_; // True if parameters are locked.

@@ -27,6 +27,7 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   CHECK(!input_features_unigrams_[position]);
   BinaryFeatures *features = new BinaryFeatures;
   input_features_unigrams_[position] = features;
+  features->reserve(50);
 
   int sentence_length = sentence->size();
 
@@ -36,6 +37,10 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   EntityOptions *options = static_cast<class EntityPipe*>(pipe_)->
     GetEntityOptions();
 
+  std::bitset<NUM_SPECIAL_KEYS> popular_keys_bitmap = std::bitset<NUM_SPECIAL_KEYS>(0);
+  BinaryFeatures temp_for_popular_features;
+  temp_for_popular_features.reserve(50);
+
   // Array of form IDs.
   const vector<int>* word_ids = &entity_sentence->GetFormIds();
 
@@ -43,8 +48,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   const vector<int>* pos_ids = &entity_sentence->GetPosIds();
 
   // Words.
-  uint16_t WID = (*word_ids)[position]; // Current word.
-                                        // Word on the left.
+  // Current word.
+  uint16_t WID = (*word_ids)[position];
+  // Word on the left.
   uint16_t pWID = (position > 0) ? (*word_ids)[position - 1] : TOKEN_START;
   // Word on the right.
   uint16_t nWID = (position < sentence_length - 1) ?
@@ -73,8 +79,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
     entity_sentence->GetGazetteerIds(position + 2) : empty_GIDs;
 
   // POS tags.
-  uint8_t PID = (*pos_ids)[position]; // Current POS.
-                                      // POS on the left.
+  // Current POS.
+  uint8_t PID = (*pos_ids)[position];
+  // POS on the left.
   uint8_t pPID = (position > 0) ?
     (*pos_ids)[position - 1] : TOKEN_START;
   // POS on the right.
@@ -88,8 +95,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
     (*pos_ids)[position + 2] : TOKEN_STOP;
 
   // Word shapes.
-  uint16_t SID = sentence->GetShapeId(position); // Current shape.
-                                                 // Shape on the left.
+  // Current shape.
+  uint16_t SID = sentence->GetShapeId(position);
+  // Shape on the left.
   uint16_t pSID = (position > 0) ?
     sentence->GetShapeId(position - 1) : TOKEN_START;
   // Shape on the right.
@@ -130,131 +138,141 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS,
                                   flags);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   // Lexical features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::W,
                                flags, WID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pW,
                                flags, pWID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nW,
                                flags, nWID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppW,
                                flags, ppWID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnW,
                                flags, nnWID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   // Gazetteer features.
   for (int k = 0; k < GIDs.size(); ++k) {
     uint16_t GID = GIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::G,
                                  flags, GID);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
   for (int k = 0; k < pGIDs.size(); ++k) {
     uint16_t pGID = pGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pG,
                                  flags, pGID);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
   for (int k = 0; k < nGIDs.size(); ++k) {
     uint16_t nGID = nGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nG,
                                  flags, nGID);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
   for (int k = 0; k < ppGIDs.size(); ++k) {
     uint16_t ppGID = ppGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppG,
                                  flags, ppGID);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
   for (int k = 0; k < nnGIDs.size(); ++k) {
     uint16_t nnGID = nnGIDs[k];
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnG,
                                  flags, nnGID);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
 
   // POS features.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::P,
                                flags, PID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PpP,
                                 flags, PID, pPID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_PP(EntityFeatureTemplateUnigram::PnP,
                                 flags, PID, nPID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PpPppP,
                                  flags, PID, pPID, ppPID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_PPP(EntityFeatureTemplateUnigram::PnPnnP,
                                  flags, PID, nPID, nnPID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   // Shape features.
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::S,
                                flags, SID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::pS,
                                flags, pSID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nS,
                                flags, nSID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::ppS,
                                flags, ppSID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
   fkey = encoder_.CreateFKey_W(EntityFeatureTemplateUnigram::nnS,
                                flags, nnSID);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   // Prefix/Suffix features.
   for (int l = 0; l < AID.size(); ++l) {
     uint8_t flag_prefix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::A,
                                   flags, AID[l], flag_prefix_length);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
   for (int l = 0; l < ZID.size(); ++l) {
     uint8_t flag_suffix_length = l;
     fkey = encoder_.CreateFKey_WP(EntityFeatureTemplateUnigram::Z,
                                   flags, ZID[l], flag_suffix_length);
-    AddFeature(fkey, features);
+    ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
   }
 
   // Several flags.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits);
-  AddFeature(fkey, features);;
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits_with_punctuation);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_upper);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_first_upper);
-  AddFeature(fkey, features);
+  ProcessFeature(fkey, features, &temp_for_popular_features, &popular_keys_bitmap);
+
+  PostProcessFeatures(features, &temp_for_popular_features, &popular_keys_bitmap);
 }
 
 void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
@@ -276,8 +294,7 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
 
   EntityOptions *options = static_cast<class EntityPipe*>(pipe_)->
     GetEntityOptions();
-  std::bitset<32> feature_set_bitmap = bitset<32>(options->large_feature_set());
-
+  std::bitset<3> feature_set_bitmap = bitset<3>(options->large_feature_set());
   // Array of form IDs.
   const vector<int>* word_ids = &entity_sentence->GetFormIds();
 
@@ -345,8 +362,8 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateBigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateBigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS,
@@ -426,8 +443,8 @@ void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
   uint64_t fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS,

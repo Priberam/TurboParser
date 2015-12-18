@@ -65,6 +65,8 @@ public:
   // Run a previously trained classifier on a single instance.
   void ClassifyInstance(Instance *instance);
 
+  void MakePopularFeatures();
+
 protected:
   // Create basic objects.
   virtual void CreateDictionary() = 0;
