@@ -24,14 +24,10 @@
 #ifdef USE_CUSTOMIZED_HASH_TABLE
 #include "HashTable.h"
 #else
-#ifdef _WIN32
 #include <unordered_map>
-#else
-#include <tr1/unordered_map>
 #endif
-#endif
-#include "SerializationUtils.h"
 #include <algorithm>
+#include "SerializationUtils.h"
 
 using namespace std;
 
@@ -126,7 +122,7 @@ public:
 protected:
   bool dense_mode;
   std::vector<std::pair<int, double> > sparse_label_weights_;
-  vector<double> dense_label_weights_;
+  std::vector<double> dense_label_weights_;
 };
 
 // A labeled parameter map maps from feature keys ("labeled" features) to
@@ -135,7 +131,7 @@ protected:
 #ifdef USE_CUSTOMIZED_HASH_TABLE
 typedef HashTable<uint64_t, LabelWeights> LabeledParameterMap;
 #else
-typedef std::tr1::unordered_map <uint64_t, LabelWeights> LabeledParameterMap;
+typedef std::unordered_map<uint64_t, LabelWeights> LabeledParameterMap;
 #endif
 
 // This class implements a sparse parameter vector, which contains weights for
@@ -179,8 +175,8 @@ public:
 
   // Get the weights for the specified labels. Returns false if no key was
   // found, in which case weights becomes empty.
-  bool Get(uint64_t key, const vector<int> &labels,
-           vector<double> *weights) const;
+  bool Get(uint64_t key, const std::vector<int> &labels,
+           std::vector<double> *weights) const;
 
   //Get the reference to the LabelWeights vector from feature key
   const LabelWeights* GetLabelWeights(uint64_t key) const;
@@ -210,15 +206,15 @@ public:
   // amount of "value".
   // Return false if the feature is not instantiated and cannot be inserted.
   // w'[id] = w[id] + val
-  void Add(uint64_t key, const vector<int> &labels,
-           const vector<double> &values);
+  void Add(uint64_t key, const std::vector<int> &labels,
+           const std::vector<double> &values);
 
   // Increment the weights of these feature keys paired with these labels by an
   // amount of "value".
   // NOTE: Silently bypasses the ones that could not be inserted, if any.
   // w'[id] = w[id] + val
-  void Add(const vector<uint64_t> &keys, const vector<int> &labels,
-           const vector<double> &values);
+  void Add(const std::vector<uint64_t> &keys, const vector<int> &labels,
+           const std::vector<double> &values);
 
   // Adds two parameter vectors. This has the effect of incrementing the weights
   // of several features.
@@ -227,16 +223,16 @@ public:
 
 protected:
 
-  uint64_t SparseLabeledParameterVector::GetMapSize() const;
+  uint64_t GetMapSize() const;
 
   // Get the weights for the specified labels.
   void GetValues(LabeledParameterMap::const_iterator iterator,
                  const vector<int> &labels,
-                 vector<double> *values) const;
+                 std::vector<double> *values) const;
 
   void GetValues(std::vector<LabelWeights>::const_iterator iterator,
                  const vector<int> &labels,
-                 vector<double> *values) const;
+                 std::vector<double> *values) const;
 
   // Get the weight for the specified label.
   // Two versions of this function: one using a const_iterator,

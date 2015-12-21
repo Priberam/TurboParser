@@ -17,14 +17,11 @@
 // along with TurboParser 2.3.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SparseLabeledParameterVector.h"
-#include "SerializationUtils.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <glog/logging.h>
 #include <bitset>
-
-using namespace std;
 
 bool LabelWeights::IsSparse() const {
   if (dense_mode) {
@@ -674,7 +671,7 @@ SparseLabeledParameterVector::FindOrInsert(uint64_t key) {
   LabeledParameterMap::iterator iterator = map_values_.find(key);
   if (iterator != map_values_.end() || growth_stopped()) return iterator;
   pair<LabeledParameterMap::iterator, bool> result =
-    map_values_.emplace(pair<uint64_t, LabelWeights>(key, LabelWeights()));
+    map_values_.emplace(key, LabelWeights());
   CHECK(result.second);
   return result.first;
 }

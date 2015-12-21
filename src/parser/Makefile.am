@@ -23,8 +23,8 @@ $(CLASSIFIER)/Alphabet.h $(CLASSIFIER)/Dictionary.h $(CLASSIFIER)/Instance.h \
 $(CLASSIFIER)/Parameters.cpp $(CLASSIFIER)/Pipe.cpp $(CLASSIFIER)/Reader.h \
 $(CLASSIFIER)/Writer.cpp $(CLASSIFIER)/Decoder.h \
 $(CLASSIFIER)/FeatureEncoder.h $(CLASSIFIER)/Options.cpp \
-$(CLASSIFIER)/Parameters.h $(CLASSIFIER)/Pipe.h \
-$(CLASSIFIER)/SparseLabeledParameterVector.h $(CLASSIFIER)/Writer.h \
+$(CLASSIFIER)/Parameters.h $(CLASSIFIER)/Pipe.h $(CLASSIFIER)/Writer.h \
+$(CLASSIFIER)/SparseLabeledParameterVector.cpp $(CLASSIFIER)/SparseLabeledParameterVector.h \
 $(UTIL)/AlgUtils.cpp $(UTIL)/logval.h $(UTIL)/SerializationUtils.h \
 $(UTIL)/StringUtils.h $(UTIL)/TimeUtils.h $(UTIL)/AlgUtils.h \
 $(UTIL)/SerializationUtils.cpp $(UTIL)/StringUtils.cpp $(UTIL)/TimeUtils.cpp \

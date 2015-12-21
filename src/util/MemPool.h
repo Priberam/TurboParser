@@ -28,14 +28,13 @@
 #define MEMORY_POOL_CHUNK_SIZE 1024
 #define MEMORY_POOL_BLOCK_SIZE 8
 
-#if USE_CPLUSCPLUS_MEMORY_POOL_FOR_PARTS 1
+#if USE_CPLUSCPLUS_MEMORY_POOL_FOR_PARTS == 1
 
 template<typename type,
   int CHUNK_SIZE = MEMORY_POOL_CHUNK_SIZE,
   int BLOCK_SIZE = MEMORY_POOL_BLOCK_SIZE> class MemPool {
   public:
     MemPool() :
-      data_pool(NULL),
       block_of_chunks_size(BLOCK_SIZE),
       chunk_size(CHUNK_SIZE),
       num_allocated_chunks(0),

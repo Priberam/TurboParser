@@ -126,9 +126,9 @@ public:
     // First, raw memory is requested from the memory pool
     SequencePartUnigram * get_allocated_part = (SequencePartUnigram *)unigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
-    //return new (get_allocated_part) SequencePartUnigram(position, tag);
-    get_allocated_part->SequencePartUnigram::SequencePartUnigram(position, tag);
-    return get_allocated_part;
+    return new (get_allocated_part) SequencePartUnigram(position, tag);
+    //get_allocated_part->SequencePartUnigram::SequencePartUnigram(position, tag);
+    //return get_allocated_part;
 #else
     return new SequencePartUnigram(position, tag);
 #endif
@@ -138,9 +138,9 @@ public:
     // First, raw memory is requested from the memory pool
     SequencePartBigram * get_allocated_part = (SequencePartBigram *)bigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
-    //return new (get_allocated_part) SequencePartBigram(position, tag, tag_left);
-    get_allocated_part->SequencePartBigram::SequencePartBigram(position, tag, tag_left);
-    return get_allocated_part;
+    return new (get_allocated_part) SequencePartBigram(position, tag, tag_left);
+    //get_allocated_part->SequencePartBigram::SequencePartBigram(position, tag, tag_left);
+    //return get_allocated_part;
 #else
     return new SequencePartBigram(position, tag, tag_left);
 #endif
@@ -151,9 +151,9 @@ public:
     // First, raw memory is requested from the memory pool
     SequencePartTrigram * get_allocated_part = (SequencePartTrigram *)trigram_pool_.GetNextBuffer();
     //Once that memory is granted, the new object is constructed in it, with a "placement new"
-    //return new (get_allocated_part) SequencePartTrigram(position, tag, tag_left, tag_left_left);
-    get_allocated_part->SequencePartTrigram::SequencePartTrigram(position, tag, tag_left, tag_left_left);
-    return get_allocated_part;
+    return new (get_allocated_part) SequencePartTrigram(position, tag, tag_left, tag_left_left);
+    //get_allocated_part->SequencePartTrigram::SequencePartTrigram(position, tag, tag_left, tag_left_left);
+    //return get_allocated_part;
 #else
     return new SequencePartTrigram(position, tag, tag_left, tag_left_left);
 #endif

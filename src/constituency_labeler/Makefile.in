@@ -111,8 +111,9 @@ am_TurboConstituencyLabeler_OBJECTS =  \
 	SequenceReader.$(OBJEXT) Alphabet.$(OBJEXT) \
 	Dictionary.$(OBJEXT) Reader.$(OBJEXT) Parameters.$(OBJEXT) \
 	Pipe.$(OBJEXT) Writer.$(OBJEXT) Options.$(OBJEXT) \
-	AlgUtils.$(OBJEXT) SerializationUtils.$(OBJEXT) \
-	StringUtils.$(OBJEXT) TimeUtils.$(OBJEXT)
+	SparseLabeledParameterVector.$(OBJEXT) AlgUtils.$(OBJEXT) \
+	SerializationUtils.$(OBJEXT) StringUtils.$(OBJEXT) \
+	TimeUtils.$(OBJEXT)
 TurboConstituencyLabeler_OBJECTS =  \
 	$(am_TurboConstituencyLabeler_OBJECTS)
 TurboConstituencyLabeler_LDADD = $(LDADD)
@@ -334,8 +335,8 @@ $(CLASSIFIER)/Alphabet.h $(CLASSIFIER)/Dictionary.h $(CLASSIFIER)/Instance.h \
 $(CLASSIFIER)/Parameters.cpp $(CLASSIFIER)/Pipe.cpp $(CLASSIFIER)/Reader.h \
 $(CLASSIFIER)/Writer.cpp $(CLASSIFIER)/Decoder.h \
 $(CLASSIFIER)/FeatureEncoder.h $(CLASSIFIER)/Options.cpp \
-$(CLASSIFIER)/Parameters.h $(CLASSIFIER)/Pipe.h \
-$(CLASSIFIER)/SparseLabeledParameterVector.h $(CLASSIFIER)/Writer.h \
+$(CLASSIFIER)/Parameters.h $(CLASSIFIER)/Pipe.h $(CLASSIFIER)/Writer.h \
+$(CLASSIFIER)/SparseLabeledParameterVector.cpp $(CLASSIFIER)/SparseLabeledParameterVector.h \
 $(UTIL)/AlgUtils.cpp $(UTIL)/logval.h $(UTIL)/SerializationUtils.h \
 $(UTIL)/StringUtils.h $(UTIL)/TimeUtils.h $(UTIL)/AlgUtils.h \
 $(UTIL)/SerializationUtils.cpp $(UTIL)/StringUtils.cpp $(UTIL)/TimeUtils.cpp \
@@ -458,6 +459,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceInstanceNumeric.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceReader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SerializationUtils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SparseLabeledParameterVector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StringUtils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeUtils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TokenDictionary.Po@am__quote@
@@ -645,6 +647,20 @@ Options.obj: $(CLASSIFIER)/Options.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(CLASSIFIER)/Options.cpp' object='Options.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Options.obj `if test -f '$(CLASSIFIER)/Options.cpp'; then $(CYGPATH_W) '$(CLASSIFIER)/Options.cpp'; else $(CYGPATH_W) '$(srcdir)/$(CLASSIFIER)/Options.cpp'; fi`
+
+SparseLabeledParameterVector.o: $(CLASSIFIER)/SparseLabeledParameterVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SparseLabeledParameterVector.o -MD -MP -MF $(DEPDIR)/SparseLabeledParameterVector.Tpo -c -o SparseLabeledParameterVector.o `test -f '$(CLASSIFIER)/SparseLabeledParameterVector.cpp' || echo '$(srcdir)/'`$(CLASSIFIER)/SparseLabeledParameterVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SparseLabeledParameterVector.Tpo $(DEPDIR)/SparseLabeledParameterVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(CLASSIFIER)/SparseLabeledParameterVector.cpp' object='SparseLabeledParameterVector.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SparseLabeledParameterVector.o `test -f '$(CLASSIFIER)/SparseLabeledParameterVector.cpp' || echo '$(srcdir)/'`$(CLASSIFIER)/SparseLabeledParameterVector.cpp
+
+SparseLabeledParameterVector.obj: $(CLASSIFIER)/SparseLabeledParameterVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SparseLabeledParameterVector.obj -MD -MP -MF $(DEPDIR)/SparseLabeledParameterVector.Tpo -c -o SparseLabeledParameterVector.obj `if test -f '$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; then $(CYGPATH_W) '$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/SparseLabeledParameterVector.Tpo $(DEPDIR)/SparseLabeledParameterVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(CLASSIFIER)/SparseLabeledParameterVector.cpp' object='SparseLabeledParameterVector.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SparseLabeledParameterVector.obj `if test -f '$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; then $(CYGPATH_W) '$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(CLASSIFIER)/SparseLabeledParameterVector.cpp'; fi`
 
 AlgUtils.o: $(UTIL)/AlgUtils.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AlgUtils.o -MD -MP -MF $(DEPDIR)/AlgUtils.Tpo -c -o AlgUtils.o `test -f '$(UTIL)/AlgUtils.cpp' || echo '$(srcdir)/'`$(UTIL)/AlgUtils.cpp
