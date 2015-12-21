@@ -27,8 +27,8 @@ typedef std::vector<BinaryFeatures*> MultiBinaryFeatures;
 
 class EntityFeatures : public SequenceFeatures {
 public:
-  EntityFeatures(Pipe* pipe) { pipe_ = pipe; }
-  virtual ~EntityFeatures() { Clear(); }
+  EntityFeatures(Pipe* pipe) : SequenceFeatures(pipe) {};
+  virtual ~EntityFeatures() {};
 
   void AddUnigramFeatures(SequenceInstanceNumeric *sentence,
                           int position);

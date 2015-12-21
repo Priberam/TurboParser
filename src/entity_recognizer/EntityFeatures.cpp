@@ -43,8 +43,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   const vector<int>* pos_ids = &entity_sentence->GetPosIds();
 
   // Words.
-  uint16_t WID = (*word_ids)[position]; // Current word.
-                                        // Word on the left.
+  // Current word.
+  uint16_t WID = (*word_ids)[position];
+  // Word on the left.
   uint16_t pWID = (position > 0) ? (*word_ids)[position - 1] : TOKEN_START;
   // Word on the right.
   uint16_t nWID = (position < sentence_length - 1) ?
@@ -73,8 +74,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
     entity_sentence->GetGazetteerIds(position + 2) : empty_GIDs;
 
   // POS tags.
-  uint8_t PID = (*pos_ids)[position]; // Current POS.
-                                      // POS on the left.
+  // Current POS.
+  uint8_t PID = (*pos_ids)[position];
+  // POS on the left.
   uint8_t pPID = (position > 0) ?
     (*pos_ids)[position - 1] : TOKEN_START;
   // POS on the right.
@@ -88,8 +90,9 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
     (*pos_ids)[position + 2] : TOKEN_STOP;
 
   // Word shapes.
-  uint16_t SID = sentence->GetShapeId(position); // Current shape.
-                                                 // Shape on the left.
+  // Current shape.
+  uint16_t SID = sentence->GetShapeId(position);
+  // Shape on the left.
   uint16_t pSID = (position > 0) ?
     sentence->GetShapeId(position - 1) : TOKEN_START;
   // Shape on the right.
@@ -130,8 +133,8 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS,
@@ -287,9 +290,10 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   // Words.
   uint16_t WID, pWID, nWID, ppWID, nnWID;
   if (feature_set_bitmap.test(0)) {
+    // Current word.
     WID = (position < sentence_length) ?
-      (*word_ids)[position] : TOKEN_STOP; // Current word.
-                                          // Word on the left.
+      (*word_ids)[position] : TOKEN_STOP;
+    // Word on the left.
     pWID = (position > 0) ?
       (*word_ids)[position - 1] : TOKEN_START;
     // Word on the right.
@@ -306,9 +310,10 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   // POS tags.
   uint8_t PID, pPID, nPID, ppPID, nnPID;
   if (feature_set_bitmap.test(1)) {
+    // Current POS.
     PID = (position < sentence_length) ?
-      (*pos_ids)[position] : TOKEN_STOP; // Current POS.
-                                         // POS on the left.
+      (*pos_ids)[position] : TOKEN_STOP;
+    // POS on the left.
     pPID = (position > 0) ?
       (*pos_ids)[position - 1] : TOKEN_START;
     // POS on the right.
@@ -325,9 +330,10 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   // Word shapes.
   uint16_t SID, pSID, nSID, ppSID, nnSID;
   if (feature_set_bitmap.test(2)) {
+    // Current shape.
     SID = (position < sentence_length) ?
-      sentence->GetShapeId(position) : TOKEN_STOP; // Current shape.
-                                                   // Shape on the left.
+      sentence->GetShapeId(position) : TOKEN_STOP;
+    // Shape on the left.
     pSID = (position > 0) ?
       sentence->GetShapeId(position - 1) : TOKEN_START;
     // Shape on the right.
@@ -345,8 +351,8 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateBigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateBigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS,
@@ -355,23 +361,18 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
 
   // Lexical features.
   if (feature_set_bitmap.test(0)) {
-    //Word
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::W,
                                  flags, WID);
     AddFeature(fkey, features);
-    //pContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::pW,
                                  flags, pWID);
     AddFeature(fkey, features);
-    //nContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nW,
                                  flags, nWID);
     AddFeature(fkey, features);
-    //ppContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::ppW,
                                  flags, ppWID);
     AddFeature(fkey, features);
-    //nnContext
     fkey = encoder_.CreateFKey_W(EntityFeatureTemplateBigram::nnW,
                                  flags, nnWID);
     AddFeature(fkey, features);
@@ -426,8 +427,8 @@ void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
   uint64_t fkey;
   uint8_t flags = 0x0;
 
-  // Maximum is 127 feature templates.
-  CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 128);
+  // Maximum is 255 feature templates.
+  CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 256);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS,

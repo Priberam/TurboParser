@@ -403,8 +403,8 @@ void Pipe::Run() {
   vector<double> gold_outputs;
   vector<double> predicted_outputs;
 
-  timeval start, end;
-  gettimeofday(&start, NULL);
+  Chronometer extended_evaluate_chrono;
+  extended_evaluate_chrono.GetTime();
 
   if (options_->evaluate()) BeginEvaluation();
 
@@ -447,12 +447,12 @@ void Pipe::Run() {
   writer_->Close();
   reader_->Close();
 
-  gettimeofday(&end, NULL);
-  LOG(INFO) << "Number of instances: " << num_instances;
-  LOG(INFO) << "Time: " << static_cast<double>(diff_ms(end, start)) / 1000.0
-    << " sec." << endl;
+  extended_evaluate_chrono.StopTime();
+  LOG(INFO) << "Number of instances: " << num_instances << endl;
+  LOG(INFO) << "Time: "
+    << extended_evaluate_chrono.GetElapsedTime() << " sec." << endl;
   LOG(INFO) << "Time (computation, excluding IO): "
-    << evaluate_chrono.GetElapsedTime() << " sec.";
+    << evaluate_chrono.GetElapsedTime() << " sec." << endl;
 
   if (options_->evaluate()) EndEvaluation();
 }

@@ -127,7 +127,6 @@ public:
     return weights_.GetSquaredNorm() + labeled_weights_.GetSquaredNorm();
   }
 
-
   // Get the squared norm of the parameter vector.
   double GetScaleFactor() const {
     return labeled_weights_.GetScaleFactor();

@@ -237,7 +237,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\entity_recognizer\EntityDictionary.h" />
-    <ClInclude Include="..\..\src\entity_recognizer\EntityFeatureEncoder.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityFeatures.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityFeatureTemplates.h" />
     <ClInclude Include="..\..\src\entity_recognizer\EntityInstance.h" />
