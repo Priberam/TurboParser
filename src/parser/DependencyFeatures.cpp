@@ -195,76 +195,98 @@ void DependencyFeatures::AddSiblingFeatures(DependencyInstanceNumeric* sentence,
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateSibling::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateSibling::COUNT);
 
   // Add direction information.
   if (!consecutive) flags |= (direction_code_first << 6); // 1 more bit.
   flags |= (direction_code_second << 7); // 1 more bit.
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateSibling::BIAS, flags);
+  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateSibling::BIAS,
+                                  flags);
   AddFeature(fkey, features);
 
   // Triplet POS feature.
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateSibling::HP_MP_SP, flags, HPID, MPID, SPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateSibling::HP_MP_SP,
+                                 flags, HPID, MPID, SPID);
   AddFeature(fkey, features);
 
   // Triplet unilexical features.
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HW_MP_SP, flags, HWID, MPID, SPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HW_MP_SP,
+                                 flags, HWID, MPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HP_MW_SP, flags, MWID, HPID, SPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HP_MW_SP,
+                                 flags, MWID, HPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HP_MP_SW, flags, SWID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateSibling::HP_MP_SW,
+                                 flags, SWID, HPID, MPID);
   AddFeature(fkey, features);
 
   // Triplet bilexical features.
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HW_MW_SP, flags, HWID, MWID, SPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HW_MW_SP,
+                                 flags, HWID, MWID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HW_MP_SW, flags, HWID, SWID, MPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HW_MP_SW,
+                                 flags, HWID, SWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HP_MW_SW, flags, MWID, SWID, HPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateSibling::HP_MW_SW,
+                                 flags, MWID, SWID, HPID);
   AddFeature(fkey, features);
 
   // Trilexical features.
   if (FLAGS_use_trilexical_features) {
     // Triplet trilexical features.
-    fkey = encoder_.CreateFKey_WWW(DependencyFeatureTemplateSibling::HW_MW_SW, flags, HWID, MWID, SWID);
+    fkey = encoder_.CreateFKey_WWW(DependencyFeatureTemplateSibling::HW_MW_SW,
+                                   flags, HWID, MWID, SWID);
     AddFeature(fkey, features);
   }
 
   // Pairwise POS features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::HP_MP, flags, HPID, MPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::HP_MP,
+                                flags, HPID, MPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::HP_SP, flags, HPID, SPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::HP_SP,
+                                flags, HPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::MP_SP, flags, MPID, SPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateSibling::MP_SP,
+                                flags, MPID, SPID);
   AddFeature(fkey, features);
 
   // Pairwise unilexical features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HW_MP, flags, HWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HW_MP,
+                                flags, HWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HP_MW, flags, MWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HP_MW,
+                                flags, MWID, HPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HW_SP, flags, HWID, SPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HW_SP,
+                                flags, HWID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HP_SW, flags, SWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::HP_SW,
+                                flags, SWID, HPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::MW_SP, flags, MWID, SPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::MW_SP,
+                                flags, MWID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::MP_SW, flags, SWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateSibling::MP_SW,
+                                flags, SWID, MPID);
   AddFeature(fkey, features);
 
   // Pairwise bilexical features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::HW_MW, flags, HWID, MWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::HW_MW,
+                                flags, HWID, MWID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::HW_SW, flags, HWID, SWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::HW_SW,
+                                flags, HWID, SWID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::MW_SW, flags, MWID, SWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateSibling::MW_SW,
+                                flags, MWID, SWID);
   AddFeature(fkey, features);
 }
 
@@ -357,74 +379,96 @@ void DependencyFeatures::AddGrandparentFeatures(
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateGrandparent::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateGrandparent::COUNT);
 
   // Add direction information.
   flags |= (direction_code << 6); // 2 more bits.
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateGrandparent::BIAS, flags);
+  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateGrandparent::BIAS,
+                                  flags);
   AddFeature(fkey, features);
 
   // Triplet POS feature.
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateGrandparent::GP_HP_MP, flags, GPID, HPID, MPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateGrandparent::GP_HP_MP,
+                                 flags, GPID, HPID, MPID);
   AddFeature(fkey, features);
 
   // Triplet unilexical features.
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GW_HP_MP, flags, GWID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GW_HP_MP,
+                                 flags, GWID, HPID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GP_HW_MP, flags, HWID, GPID, MPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GP_HW_MP,
+                                 flags, HWID, GPID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GP_HP_MW, flags, MWID, GPID, HPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateGrandparent::GP_HP_MW,
+                                 flags, MWID, GPID, HPID);
   AddFeature(fkey, features);
 
   // Triplet bilexical features.
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GW_HW_MP, flags, GWID, HWID, MPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GW_HW_MP,
+                                 flags, GWID, HWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GW_HP_MW, flags, GWID, MWID, HPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GW_HP_MW,
+                                 flags, GWID, MWID, HPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GP_HW_MW, flags, HWID, MWID, GPID);
+  fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateGrandparent::GP_HW_MW,
+                                 flags, HWID, MWID, GPID);
   AddFeature(fkey, features);
 
   if (FLAGS_use_trilexical_features) {
     // Triplet trilexical features.
-    fkey = encoder_.CreateFKey_WWW(DependencyFeatureTemplateGrandparent::GW_HW_MW, flags, GWID, HWID, MWID);
+    fkey = encoder_.CreateFKey_WWW(DependencyFeatureTemplateGrandparent::GW_HW_MW,
+                                   flags, GWID, HWID, MWID);
     AddFeature(fkey, features);
   }
 
   // Pairwise POS features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::GP_HP, flags, GPID, HPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::GP_HP,
+                                flags, GPID, HPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::GP_MP, flags, GPID, MPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::GP_MP,
+                                flags, GPID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::HP_MP, flags, HPID, MPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateGrandparent::HP_MP,
+                                flags, HPID, MPID);
   AddFeature(fkey, features);
 
   // Pairwise unilexical features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GW_HP, flags, GWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GW_HP,
+                                flags, GWID, HPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GP_HW, flags, HWID, GPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GP_HW,
+                                flags, HWID, GPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GW_MP, flags, GWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GW_MP,
+                                flags, GWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GP_MW, flags, MWID, GPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::GP_MW,
+                                flags, MWID, GPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::HW_MP, flags, HWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::HW_MP,
+                                flags, HWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::HP_MW, flags, MWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateGrandparent::HP_MW,
+                                flags, MWID, HPID);
   AddFeature(fkey, features);
 
   // Pairwise bilexical features.
   // This is not redundant w.r.t. the arc features, since the flags may carry important information.
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::GW_HW, flags, GWID, HWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::GW_HW,
+                                flags, GWID, HWID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::GW_MW, flags, GWID, MWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::GW_MW,
+                                flags, GWID, MWID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::HW_MW, flags, HWID, MWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateGrandparent::HW_MW,
+                                flags, HWID, MWID);
   AddFeature(fkey, features);
 }
 
@@ -504,26 +548,33 @@ void DependencyFeatures::AddGrandSiblingFeatures(DependencyInstanceNumeric* sent
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateGrandSibl::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateGrandSibl::COUNT);
 
   // Add direction information.
   flags |= (direction_code << 6); // 2 more bits.
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateGrandSibl::BIAS, flags);
+  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateGrandSibl::BIAS,
+                                  flags);
   AddFeature(fkey, features);
 
   // Quadruplet POS feature.
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MP_SP, flags, GPID, HPID, MPID, SPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MP_SP,
+                                  flags, GPID, HPID, MPID, SPID);
   AddFeature(fkey, features);
 
   // Quadruplet unilexical features.
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GW_HP_MP_SP, flags, GWID, HPID, MPID, SPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GW_HP_MP_SP,
+                                  flags, GWID, HPID, MPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HW_MP_SP, flags, HWID, GPID, MPID, SPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HW_MP_SP,
+                                  flags, HWID, GPID, MPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MW_SP, flags, MWID, GPID, HPID, SPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MW_SP,
+                                  flags, MWID, GPID, HPID, SPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MP_SW, flags, SWID, GPID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateGrandSibl::GP_HP_MP_SW,
+                                  flags, SWID, GPID, HPID, MPID);
   AddFeature(fkey, features);
 
   if (FLAGS_use_pair_features_grandsibling_conjunctions) {
@@ -591,56 +642,74 @@ void DependencyFeatures::AddTriSiblingFeatures(DependencyInstanceNumeric* senten
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateTriSibl::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateTriSibl::COUNT);
 
   // Add direction information.
   flags |= (direction_code << 6); // 1 more bit.
 
   // Bias feature.
-  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateTriSibl::BIAS, flags);
+  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateTriSibl::BIAS,
+                                  flags);
   AddFeature(fkey, features);
 
   // Quadruplet POS feature.
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateTriSibl::HP_MP_SP_TP, flags, HPID, MPID, SPID, TPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateTriSibl::HP_MP_SP_TP,
+                                  flags, HPID, MPID, SPID, TPID);
   AddFeature(fkey, features);
 
   // Quadruplet unilexical features.
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HW_MP_SP_TP, flags, HWID, MPID, SPID, TPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HW_MP_SP_TP,
+                                  flags, HWID, MPID, SPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MW_SP_TP, flags, MWID, HPID, SPID, TPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MW_SP_TP,
+                                  flags, MWID, HPID, SPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MP_SW_TP, flags, SWID, HPID, MPID, TPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MP_SW_TP,
+                                  flags, SWID, HPID, MPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MP_SP_TW, flags, TWID, HPID, MPID, SPID);
+  fkey = encoder_.CreateFKey_WPPP(DependencyFeatureTemplateTriSibl::HP_MP_SP_TW,
+                                  flags, TWID, HPID, MPID, SPID);
 
   // Triplet POS features.
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateTriSibl::HP_MP_TP, flags, HPID, MPID, TPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateTriSibl::HP_MP_TP,
+                                 flags, HPID, MPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateTriSibl::MP_SP_TP, flags, MPID, SPID, TPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateTriSibl::MP_SP_TP,
+                                 flags, MPID, SPID, TPID);
   AddFeature(fkey, features);
 
   // Triplet unilexical features.
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HW_MP_TP, flags, HWID, MPID, TPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HW_MP_TP,
+                                 flags, HWID, MPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HP_MW_TP, flags, MWID, HPID, TPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HP_MW_TP,
+                                 flags, MWID, HPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HP_MP_TW, flags, TWID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::HP_MP_TW,
+                                 flags, TWID, HPID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MW_SP_TP, flags, MWID, SPID, TPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MW_SP_TP,
+                                 flags, MWID, SPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MP_SW_TP, flags, SWID, MPID, TPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MP_SW_TP,
+                                 flags, SWID, MPID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MP_SP_TW, flags, TWID, MPID, SPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateTriSibl::MP_SP_TW,
+                                 flags, TWID, MPID, SPID);
   AddFeature(fkey, features);
 
   // Pairwise POS features.
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateTriSibl::MP_TP, flags, MPID, TPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateTriSibl::MP_TP,
+                                flags, MPID, TPID);
   AddFeature(fkey, features);
 
   // Pairwise unilexical features.
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateTriSibl::MW_TP, flags, MWID, TPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateTriSibl::MW_TP,
+                                flags, MWID, TPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateTriSibl::MP_TW, flags, TWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateTriSibl::MP_TW,
+                                flags, TWID, MPID);
   AddFeature(fkey, features);
 }
 
@@ -729,6 +798,7 @@ void DependencyFeatures::AddDirectedPathFeatures(
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplatePath::COUNT, 256);
+  features->reserve(DependencyFeatureTemplatePath::COUNT);
 
   // Code for feature type, mode and extended mode.
   flags = DependencyFeatureTemplateParts::PATH;
@@ -738,35 +808,44 @@ void DependencyFeatures::AddDirectedPathFeatures(
   AddFeature(fkey, features);
 
   // Head-modifier features
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplatePath::AP_DP, flags, APID, DPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplatePath::AP_DP, flags,
+                                APID, DPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplatePath::AP_DP, flags, APID, DPID, binned_length_code);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplatePath::AP_DP, flags,
+                                 APID, DPID, binned_length_code);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplatePath::AW_DW, flags, AWID, DWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplatePath::AW_DW, flags,
+                                AWID, DWID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AP_DW, flags, DWID, APID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AP_DW, flags,
+                                DWID, APID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AW_DP, flags, AWID, DPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AW_DP, flags,
+                                AWID, DPID);
   AddFeature(fkey, features);
 
   flags |= (0x1 << 4); // 1 more bit.
   flags |= (direction_code << 5); // 1 more bit.
 
   // Head-modifier features
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplatePath::AP_DP, flags, APID, DPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplatePath::AP_DP,
+                                flags, APID, DPID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplatePath::AP_DP, flags, APID, DPID, binned_length_code);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplatePath::AP_DP,
+                                 flags, APID, DPID, binned_length_code);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AP_DW, flags, DWID, APID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AP_DW,
+                                flags, DWID, APID);
   AddFeature(fkey, features);
 
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AW_DP, flags, AWID, DPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplatePath::AW_DP,
+                                flags, AWID, DPID);
   AddFeature(fkey, features);
 }
 
@@ -880,6 +959,7 @@ void DependencyFeatures::AddHeadBigramFeatures(
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateBigram::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateBigram::COUNT);
 
   for (int mode = 0; mode < 2; ++mode) {
     // Code for feature type, mode and extended mode.
@@ -893,35 +973,36 @@ void DependencyFeatures::AddHeadBigramFeatures(
     }
 
     // Bias feature.
-    fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateBigram::BIAS, flags);
+    fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateBigram::BIAS,
+                                    flags);
     AddFeature(fkey, features);
 
     if (mode == 1) {
-      fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateBigram::pMP_MP_pDIST_DIST, flags,
-                                       pMPID, MPID, binned_length_code_previous, binned_length_code, flags_bigram);
+      fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateBigram::pMP_MP_pDIST_DIST,
+                                       flags, pMPID, MPID, binned_length_code_previous, binned_length_code, flags_bigram);
       AddFeature(fkey, features);
     }
 
     // POS features.
-    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateBigram::JP_pMP_HP_MP, flags,
-                                     JPID, pMPID, HPID, MPID, flags_bigram);
+    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateBigram::JP_pMP_HP_MP,
+                                     flags, JPID, pMPID, HPID, MPID, flags_bigram);
     AddFeature(fkey, features);
 
     // Unilexical features.
-    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JW_pMP_HP_MP, flags,
-                                     JWID, pMPID, HPID, MPID, flags_bigram);
+    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JW_pMP_HP_MP,
+                                     flags, JWID, pMPID, HPID, MPID, flags_bigram);
     AddFeature(fkey, features);
 
-    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMW_HP_MP, flags,
-                                     pMWID, JPID, HPID, MPID, flags_bigram);
+    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMW_HP_MP,
+                                     flags, pMWID, JPID, HPID, MPID, flags_bigram);
     AddFeature(fkey, features);
 
-    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMP_HW_MP, flags,
-                                     HWID, JPID, pMPID, MPID, flags_bigram);
+    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMP_HW_MP,
+                                     flags, HWID, JPID, pMPID, MPID, flags_bigram);
     AddFeature(fkey, features);
 
-    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMP_HP_MW, flags,
-                                     MWID, JWID, pMPID, HPID, flags_bigram);
+    fkey = encoder_.CreateFKey_WPPPP(DependencyFeatureTemplateBigram::JP_pMP_HP_MW,
+                                     flags, MWID, JWID, pMPID, HPID, flags_bigram);
     AddFeature(fkey, features);
   }
 }
@@ -1030,6 +1111,7 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   // Maximum is 255 feature templates.
   //LOG(INFO) << DependencyFeatureTemplateArc::COUNT;
   CHECK_LT(DependencyFeatureTemplateArc::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateArc::COUNT);
 
   uint64_t fkey;
   uint8_t flags = 0;
@@ -1104,7 +1186,8 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   flags |= (direction_code << 4); // 1 more bit.
 
   // Bias feature (not in EGSTRA).
-  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateArc::BIAS, flags);
+  fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateArc::BIAS,
+                                  flags);
   AddFeature(fkey, features);
 
   /////////////////////////////////////////////////////////////////////////////
@@ -1114,20 +1197,25 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   // Note: in EGSTRA (but not here), token and token contextual features go
   // without direction flags.
   // Coarse POS features.
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HP, flags, HPID);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HP,
+                               flags, HPID);
   AddFeature(fkey, features);
   // Fine POS features.
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HQ, flags, HQID);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HQ,
+                               flags, HQID);
   AddFeature(fkey, features);
   // Lexical features.
-  fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HW, flags, HWID);
+  fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HW,
+                               flags, HWID);
   AddFeature(fkey, features);
   if (use_lemma_features) {
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HL, flags, HLID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HL,
+                                 flags, HLID);
     AddFeature(fkey, features);
   }
   // Features involving words and POS.
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HWP, flags, HWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HWP,
+                                flags, HWID, HPID);
   AddFeature(fkey, features);
   // Morpho-syntactic features.
   // Technically should add context here too to match egstra, but I don't think it
@@ -1142,9 +1230,11 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
       } else {
         HFID = (HFID << 4) | ((uint16_t)j);
       }
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HF, flags, HFID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HF,
+                                   flags, HFID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HWF, flags, HWID, HFID);
+      fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HWF,
+                                    flags, HWID, HFID);
       AddFeature(fkey, features);
     }
   }
@@ -1152,17 +1242,22 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   // If labeled parsing, features involving the modifier only are still useful,
   // since they will be conjoined with the label.
   if (labeled) {
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MP, flags, MPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MP,
+                                 flags, MPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MQ, flags, MQID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MQ,
+                                 flags, MQID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MW, flags, MWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MW,
+                                 flags, MWID);
     AddFeature(fkey, features);
     if (use_lemma_features) {
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ML, flags, MLID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ML,
+                                   flags, MLID);
       AddFeature(fkey, features);
     }
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::MWP, flags, MWID, MPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::MWP,
+                                  flags, MWID, MPID);
     AddFeature(fkey, features);
     for (int k = 0; k < sentence->GetNumMorphFeatures(modifier); ++k) {
       MFID = sentence->GetMorphFeature(modifier, k);
@@ -1173,9 +1268,11 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
       } else {
         MFID = (MFID << 4) | ((uint16_t)k);
       }
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MF, flags, MFID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MF,
+                                   flags, MFID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::MWF, flags, MWID, MFID);
+      fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::MWF,
+                                    flags, MWID, MFID);
       AddFeature(fkey, features);
     }
   }
@@ -1185,129 +1282,177 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   /////////////////////////////////////////////////////////////////////////////
 
   if (max_token_context >= 1) {
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pHP, flags, pHPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pHP,
+                                 flags, pHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nHP, flags, nHPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nHP,
+                                 flags, nHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pHQ, flags, pHQID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pHQ,
+                                 flags, pHQID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nHQ, flags, nHQID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nHQ,
+                                 flags, nHQID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pHW, flags, pHWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pHW,
+                                 flags, pHWID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nHW, flags, nHWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nHW,
+                                 flags, nHWID);
     AddFeature(fkey, features);
     if (use_lemma_features) {
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pHL, flags, pHLID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pHL,
+                                   flags, pHLID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nHL, flags, nHLID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nHL,
+                                   flags, nHLID);
       AddFeature(fkey, features);
     }
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::pHWP, flags, pHWID, pHPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::pHWP,
+                                  flags, pHWID, pHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nHWP, flags, nHWID, nHPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nHWP,
+                                  flags, nHWID, nHPID);
     AddFeature(fkey, features);
 
     // If labeled parsing, features involving the modifier only are still useful,
     // since they will be conjoined with the label.
     if (labeled) {
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pMP, flags, pMPID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pMP,
+                                   flags, pMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nMP, flags, nMPID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nMP,
+                                   flags, nMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pMQ, flags, pMQID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::pMQ,
+                                   flags, pMQID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nMQ, flags, nMQID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nMQ,
+                                   flags, nMQID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pMW, flags, pMWID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pMW,
+                                   flags, pMWID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nMW, flags, nMWID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nMW,
+                                   flags, nMWID);
       AddFeature(fkey, features);
       if (use_lemma_features) {
-        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pML, flags, pMLID);
+        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::pML,
+                                     flags, pMLID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nML, flags, nMLID);
+        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nML,
+                                     flags, nMLID);
         AddFeature(fkey, features);
       }
-      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::pMWP, flags, pMWID, pMPID);
+      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::pMWP,
+                                    flags, pMWID, pMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nMWP, flags, nMWID, nMPID);
+      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nMWP,
+                                    flags, nMWID, nMPID);
       AddFeature(fkey, features);
     }
   }
 
   if (max_token_context >= 2) {
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppHP, flags, ppHPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppHP,
+                                 flags, ppHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnHP, flags, nnHPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnHP,
+                                 flags, nnHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppHQ, flags, ppHQID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppHQ,
+                                 flags, ppHQID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnHQ, flags, nnHQID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnHQ,
+                                 flags, nnHQID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppHW, flags, ppHWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppHW,
+                                 flags, ppHWID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnHW, flags, nnHWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnHW,
+                                 flags, nnHWID);
     AddFeature(fkey, features);
     if (use_lemma_features) {
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppHL, flags, ppHLID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppHL,
+                                   flags, ppHLID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnHL, flags, nnHLID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnHL,
+                                   flags, nnHLID);
       AddFeature(fkey, features);
     }
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::ppHWP, flags, ppHWID, ppHPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::ppHWP,
+                                  flags, ppHWID, ppHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nnHWP, flags, nnHWID, nnHPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nnHWP,
+                                  flags, nnHWID, nnHPID);
     AddFeature(fkey, features);
 
     // If labeled parsing, features involving the modifier only are still useful,
     // since they will be conjoined with the label.
     if (labeled) {
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppMP, flags, ppMPID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppMP,
+                                   flags, ppMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnMP, flags, nnMPID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnMP,
+                                   flags, nnMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppMQ, flags, ppMQID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::ppMQ,
+                                   flags, ppMQID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnMQ, flags, nnMQID);
+      fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::nnMQ,
+                                   flags, nnMQID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppMW, flags, ppMWID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppMW,
+                                   flags, ppMWID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnMW, flags, nnMWID);
+      fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnMW,
+                                   flags, nnMWID);
       AddFeature(fkey, features);
       if (use_lemma_features) {
-        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppML, flags, ppMLID);
+        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::ppML,
+                                     flags, ppMLID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnML, flags, nnMLID);
+        fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::nnML,
+                                     flags, nnMLID);
         AddFeature(fkey, features);
       }
-      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::ppMWP, flags, ppMWID, ppMPID);
+      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::ppMWP,
+                                    flags, ppMWID, ppMPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nnMWP, flags, nnMWID, nnMPID);
+      fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::nnMWP,
+                                    flags, nnMWID, nnMPID);
       AddFeature(fkey, features);
     }
   }
 
   // Contextual bigram and trigram features involving POS.
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_pHP, flags, HPID, pHPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_pHP,
+                                flags, HPID, pHPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_pHP_ppHP, flags, HPID, pHPID, ppHPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_pHP_ppHP,
+                                 flags, HPID, pHPID, ppHPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_nHP, flags, HPID, nHPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_nHP,
+                                flags, HPID, nHPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_nHP_nnHP, flags, HPID, nHPID, nnHPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_nHP_nnHP,
+                                 flags, HPID, nHPID, nnHPID);
   AddFeature(fkey, features);
 
   // If labeled parsing, features involving the modifier only are still useful,
   // since they will be conjoined with the label.
   if (labeled) {
-    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP_pMP, flags, MPID, pMPID);
+    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP_pMP,
+                                  flags, MPID, pMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::MP_pMP_ppMP, flags, MPID, pMPID, ppMPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::MP_pMP_ppMP,
+                                   flags, MPID, pMPID, ppMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP_nMP, flags, MPID, nMPID);
+    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP_nMP,
+                                  flags, MPID, nMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::MP_nMP_nnMP, flags, MPID, nMPID, nnMPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::MP_nMP_nnMP,
+                                   flags, MPID, nMPID, nnMPID);
     AddFeature(fkey, features);
   }
 
@@ -1317,23 +1462,30 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
   /////////////////////////////////////////////////////////////////////////////
 
   // POS features.
-  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_MP, flags, HPID, MPID);
+  fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_MP,
+                                flags, HPID, MPID);
   AddFeature(fkey, features);
 
   // Lexical/Bilexical features.
-  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HW_MW, flags, HWID, MWID);
+  fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HW_MW,
+                                flags, HWID, MWID);
   AddFeature(fkey, features);
 
   // Features involving words and POS.
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MW, flags, MWID, HPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MW,
+                                flags, MWID, HPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MWP, flags, MWID, MPID, HPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MWP,
+                                 flags, MWID, MPID, HPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HW_MP, flags, HWID, MPID);
+  fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HW_MP,
+                                flags, HWID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HWP_MP, flags, HWID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HWP_MP,
+                                 flags, HWID, HPID, MPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HWP_MWP, flags, HWID, MWID, HPID, MPID);
+  fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HWP_MWP,
+                                  flags, HWID, MWID, HPID, MPID);
   AddFeature(fkey, features);
 
   // Morpho-syntactic features.
@@ -1357,99 +1509,133 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
           MFID = (MFID << 4) | ((uint16_t)k);
         }
         // Morphological features.
-        fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HF_MF, flags, HFID, MFID);
+        fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HF_MF,
+                                      flags, HFID, MFID);
         AddFeature(fkey, features);
 
         // Morphological features conjoined with POS.
-        fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HF_MP, flags, HFID, MPID);
+        fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HF_MP,
+                                      flags, HFID, MPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HF_MFP, flags, HFID, MFID, MPID);
+        fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HF_MFP,
+                                       flags, HFID, MFID, MPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MF, flags, MFID, HPID);
+        fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MF,
+                                      flags, MFID, HPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HFP_MF, flags, HFID, MFID, HPID);
+        fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HFP_MF,
+                                       flags, HFID, MFID, HPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HFP_MP, flags, HFID, HPID, MPID);
+        fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HFP_MP,
+                                       flags, HFID, HPID, MPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MFP, flags, MFID, HPID, MPID);
+        fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MFP,
+                                       flags, MFID, HPID, MPID);
         AddFeature(fkey, features);
-        fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HFP_MFP, flags, HFID, MFID, HPID, MPID);
+        fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HFP_MFP,
+                                        flags, HFID, MFID, HPID, MPID);
         AddFeature(fkey, features);
       }
     }
   }
 
   // Contextual features.
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pHP, flags, HPID, MPID, pHPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pHP,
+                                 flags, HPID, MPID, pHPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nHP, flags, HPID, MPID, nHPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nHP,
+                                 flags, HPID, MPID, nHPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pMP, flags, HPID, MPID, pMPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pMP,
+                                 flags, HPID, MPID, pMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nMP, flags, HPID, MPID, nMPID);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nMP,
+                                 flags, HPID, MPID, nMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_pMP, flags, HPID, MPID, pHPID, pMPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_pMP,
+                                  flags, HPID, MPID, pHPID, pMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_nMP, flags, HPID, MPID, nHPID, nMPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_nMP,
+                                  flags, HPID, MPID, nHPID, nMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP, flags, HPID, MPID, pHPID, nMPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP,
+                                  flags, HPID, MPID, pHPID, nMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP, flags, HPID, MPID, nHPID, pMPID);
+  fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP,
+                                  flags, HPID, MPID, nHPID, pMPID);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nHP_pMP_nMP, flags, HPID, MPID, pHPID, nHPID, pMPID, nMPID);
+  fkey = encoder_.CreateFKey_PPPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nHP_pMP_nMP,
+                                    flags, HPID, MPID, pHPID, nHPID, pMPID, nMPID);
   AddFeature(fkey, features);
 
   // Features for adjacent dependencies.
   if (head != 0 && head == modifier - 1) {
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP, flags, HPID, MPID, pHPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP,
+                                    flags, HPID, MPID, pHPID, 0x1);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nMP, flags, HPID, MPID, nMPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nMP,
+                                    flags, HPID, MPID, nMPID, 0x1);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP, flags, HPID, MPID, pHPID, nMPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP,
+                                     flags, HPID, MPID, pHPID, nMPID, 0x1);
     AddFeature(fkey, features);
   } else if (head != 0 && head == modifier + 1) {
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP, flags, HPID, MPID, nHPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP,
+                                    flags, HPID, MPID, nHPID, 0x1);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pMP, flags, HPID, MPID, pMPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pMP,
+                                    flags, HPID, MPID, pMPID, 0x1);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP, flags, HPID, MPID, nHPID, pMPID, 0x1);
+    fkey = encoder_.CreateFKey_PPPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP,
+                                     flags, HPID, MPID, nHPID, pMPID, 0x1);
     AddFeature(fkey, features);
   }
 
   // Exact arc length.
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::DIST, flags, exact_length_code);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::DIST,
+                               flags, exact_length_code);
   AddFeature(fkey, features);
 
   // Binned arc length.
   for (uint8_t bin = 0; bin <= binned_length_code; ++bin) {
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BIAS, flags, bin);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BIAS,
+                                 flags, bin);
     AddFeature(fkey, features);
   }
 
   // POS features conjoined with binned arc length.
   for (uint8_t bin = 0; bin <= binned_length_code; bin++) {
-    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP, flags, HPID, bin);
+    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP,
+                                  flags, HPID, bin);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP, flags, MPID, bin);
+    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::MP,
+                                  flags, MPID, bin);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP, flags, HPID, MPID, bin);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP,
+                                   flags, HPID, MPID, bin);
     AddFeature(fkey, features);
   }
 
   // In-between flags.
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG, flags, flag_between_verb);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG,
+                               flags, flag_between_verb);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG, flags, flag_between_punc);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG,
+                               flags, flag_between_punc);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG, flags, flag_between_coord);
+  fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::BFLAG,
+                               flags, flag_between_coord);
   AddFeature(fkey, features);
 
   // POS features conjoined with in-between flag.
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG, flags, HPID, MPID, flag_between_verb);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG,
+                                 flags, HPID, MPID, flag_between_verb);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG, flags, HPID, MPID, flag_between_punc);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG,
+                                 flags, HPID, MPID, flag_between_punc);
   AddFeature(fkey, features);
-  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG, flags, HPID, MPID, flag_between_coord);
+  fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BFLAG,
+                                 flags, HPID, MPID, flag_between_coord);
   AddFeature(fkey, features);
 
   set<int> BPIDs;
@@ -1460,13 +1646,17 @@ void DependencyFeatures::AddWordPairFeatures(DependencyInstanceNumeric* sentence
       BPIDs.insert(BPID);
 
       // POS in the middle.
-      fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BP, flags, HPID, MPID, BPID);
+      fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BP,
+                                     flags, HPID, MPID, BPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HW_MW_BP, flags, HWID, MWID, BPID);
+      fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HW_MW_BP,
+                                     flags, HWID, MWID, BPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HW_MP_BP, flags, HWID, MPID, BPID);
+      fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HW_MP_BP,
+                                     flags, HWID, MPID, BPID);
       AddFeature(fkey, features);
-      fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MW_BP, flags, MWID, HPID, BPID);
+      fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MW_BP,
+                                     flags, MWID, HPID, BPID);
       AddFeature(fkey, features);
     }
     BPIDs.clear();
@@ -1563,6 +1753,7 @@ void DependencyFeatures::AddWordPairFeaturesMST(DependencyInstanceNumeric* sente
 
   // Maximum is 255 feature templates.
   CHECK_LT(DependencyFeatureTemplateArc::COUNT, 256);
+  features->reserve(DependencyFeatureTemplateArc::COUNT);
 
   for (mode = 0; mode < 2; ++mode) {
     // Code for feature type, mode and extended mode.
@@ -1577,39 +1768,53 @@ void DependencyFeatures::AddWordPairFeaturesMST(DependencyInstanceNumeric* sente
     }
 
     // Bias feature.
-    fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateArc::BIAS, flags);
+    fkey = encoder_.CreateFKey_NONE(DependencyFeatureTemplateArc::BIAS,
+                                    flags);
     AddFeature(fkey, features);
 
     // POS features.
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HP, flags, HPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::HP,
+                                 flags, HPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MP, flags, MPID);
+    fkey = encoder_.CreateFKey_P(DependencyFeatureTemplateArc::MP,
+                                 flags, MPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_MP, flags, HPID, MPID);
+    fkey = encoder_.CreateFKey_PP(DependencyFeatureTemplateArc::HP_MP,
+                                  flags, HPID, MPID);
     AddFeature(fkey, features);
 
     // Lexical/Bilexical features.
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HW, flags, HWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::HW,
+                                 flags, HWID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MW, flags, MWID);
+    fkey = encoder_.CreateFKey_W(DependencyFeatureTemplateArc::MW,
+                                 flags, MWID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HW_MW, flags, HWID, MWID);
+    fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HW_MW,
+                                  flags, HWID, MWID);
     AddFeature(fkey, features);
 
     // Features involving words and POS.
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HWP, flags, HWID, HPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HWP,
+                                  flags, HWID, HPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::MWP, flags, MWID, MPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::MWP,
+                                  flags, MWID, MPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MW, flags, MWID, HPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MW,
+                                  flags, MWID, HPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MWP, flags, MWID, MPID, HPID);
+    fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MWP,
+                                   flags, MWID, MPID, HPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HW_MP, flags, HWID, MPID);
+    fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HW_MP,
+                                  flags, HWID, MPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HWP_MP, flags, HWID, HPID, MPID);
+    fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HWP_MP,
+                                   flags, HWID, HPID, MPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HWP_MWP, flags, HWID, MWID, HPID, MPID);
+    fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HWP_MWP,
+                                    flags, HWID, MWID, HPID, MPID);
     AddFeature(fkey, features);
 
     // Morpho-syntactic features.
@@ -1633,46 +1838,63 @@ void DependencyFeatures::AddWordPairFeaturesMST(DependencyInstanceNumeric* sente
             MFID = (MFID << 4) | ((uint16_t)k);
           }
           // Morphological features.
-          fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HF_MF, flags, HFID, MFID);
+          fkey = encoder_.CreateFKey_WW(DependencyFeatureTemplateArc::HF_MF,
+                                        flags, HFID, MFID);
           AddFeature(fkey, features);
 
           // Morphological features conjoined with POS.
-          fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HF_MP, flags, HFID, MPID);
+          fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HF_MP,
+                                        flags, HFID, MPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HF_MFP, flags, HFID, MFID, MPID);
+          fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HF_MFP,
+                                         flags, HFID, MFID, MPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MF, flags, MFID, HPID);
+          fkey = encoder_.CreateFKey_WP(DependencyFeatureTemplateArc::HP_MF,
+                                        flags, MFID, HPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HFP_MF, flags, HFID, MFID, HPID);
+          fkey = encoder_.CreateFKey_WWP(DependencyFeatureTemplateArc::HFP_MF,
+                                         flags, HFID, MFID, HPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HFP_MP, flags, HFID, HPID, MPID);
+          fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HFP_MP,
+                                         flags, HFID, HPID, MPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MFP, flags, MFID, HPID, MPID);
+          fkey = encoder_.CreateFKey_WPP(DependencyFeatureTemplateArc::HP_MFP,
+                                         flags, MFID, HPID, MPID);
           AddFeature(fkey, features);
-          fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HFP_MFP, flags, HFID, MFID, HPID, MPID);
+          fkey = encoder_.CreateFKey_WWPP(DependencyFeatureTemplateArc::HFP_MFP,
+                                          flags, HFID, MFID, HPID, MPID);
           AddFeature(fkey, features);
         }
       }
     }
 
     // Contextual features.
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pHP, flags, HPID, MPID, pHPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pHP,
+                                   flags, HPID, MPID, pHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nHP, flags, HPID, MPID, nHPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nHP,
+                                   flags, HPID, MPID, nHPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pMP, flags, HPID, MPID, pMPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_pMP,
+                                   flags, HPID, MPID, pMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nMP, flags, HPID, MPID, nMPID);
+    fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_nMP,
+                                   flags, HPID, MPID, nMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_pMP, flags, HPID, MPID, pHPID, pMPID);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_pMP,
+                                    flags, HPID, MPID, pHPID, pMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_nMP, flags, HPID, MPID, nHPID, nMPID);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_nMP,
+                                    flags, HPID, MPID, nHPID, nMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP, flags, HPID, MPID, pHPID, nMPID);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nMP,
+                                    flags, HPID, MPID, pHPID, nMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP, flags, HPID, MPID, nHPID, pMPID);
+    fkey = encoder_.CreateFKey_PPPP(DependencyFeatureTemplateArc::HP_MP_nHP_pMP,
+                                    flags, HPID, MPID, nHPID, pMPID);
     AddFeature(fkey, features);
-    fkey = encoder_.CreateFKey_PPPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nHP_pMP_nMP, flags, HPID, MPID, pHPID, nHPID, pMPID, nMPID);
+    fkey = encoder_.CreateFKey_PPPPPP(DependencyFeatureTemplateArc::HP_MP_pHP_nHP_pMP_nMP,
+                                      flags, HPID, MPID, pHPID, nHPID, pMPID, nMPID);
     AddFeature(fkey, features);
 
     // In-between features.
@@ -1683,7 +1905,8 @@ void DependencyFeatures::AddWordPairFeaturesMST(DependencyInstanceNumeric* sente
         BPIDs.insert(BPID);
 
         // POS in the middle.
-        fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BP, flags, HPID, MPID, BPID);
+        fkey = encoder_.CreateFKey_PPP(DependencyFeatureTemplateArc::HP_MP_BP,
+                                       flags, HPID, MPID, BPID);
         AddFeature(fkey, features);
       }
     }

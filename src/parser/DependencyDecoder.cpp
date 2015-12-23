@@ -611,6 +611,11 @@ void DependencyDecoder::RunChuLiuEdmonds(int sentence_length,
   vector<vector<int> > candidate_heads(sentence_length);
   vector<vector<double> > candidate_scores(sentence_length);
   vector<bool> disabled(sentence_length, false);
+
+  for (int r = 0; r < sentence_length; ++r) {
+    candidate_heads[r].reserve(sentence_length);
+    candidate_scores[r].reserve(sentence_length);
+  }
   for (int r = 0; r < arcs.size(); ++r) {
     int h = arcs[r]->head();
     int m = arcs[r]->modifier();

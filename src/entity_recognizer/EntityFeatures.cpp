@@ -130,11 +130,11 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   flag_first_upper = 0x3 | (flag_first_upper << 4);
 
   uint64_t fkey;
-  vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
   // Maximum is 255 feature templates.
   CHECK_LT(EntityFeatureTemplateUnigram::COUNT, 256);
+  features->reserve(EntityFeatureTemplateUnigram::COUNT);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateUnigram::BIAS,
@@ -245,7 +245,7 @@ void EntityFeatures::AddUnigramFeatures(SequenceInstanceNumeric *sentence,
   // Several flags.
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits);
-  AddFeature(fkey, features);;
+  AddFeature(fkey, features);
 
   fkey = encoder_.CreateFKey_P(EntityFeatureTemplateUnigram::FLAG,
                                flags, flag_all_digits_with_punctuation);
@@ -348,11 +348,11 @@ void EntityFeatures::AddBigramFeatures(SequenceInstanceNumeric *sentence,
   }
 
   uint64_t fkey;
-  vector<uint64_t> * multibit_fkey;
   uint8_t flags = 0x0;
 
   // Maximum is 255 feature templates.
   CHECK_LT(EntityFeatureTemplateBigram::COUNT, 256);
+  features->reserve(EntityFeatureTemplateBigram::COUNT);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateBigram::BIAS,
@@ -429,6 +429,7 @@ void EntityFeatures::AddTrigramFeatures(SequenceInstanceNumeric *sentence,
 
   // Maximum is 255 feature templates.
   CHECK_LT(EntityFeatureTemplateTrigram::COUNT, 256);
+  features->reserve(EntityFeatureTemplateTrigram::COUNT);
 
   // Bias feature.
   fkey = encoder_.CreateFKey_NONE(EntityFeatureTemplateTrigram::BIAS,

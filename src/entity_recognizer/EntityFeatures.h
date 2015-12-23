@@ -21,9 +21,6 @@
 
 #include "SequenceFeatures.h"
 #include "FeatureEncoder.h"
-#include "EntityInstanceNumeric.h"
-
-typedef std::vector<BinaryFeatures*> MultiBinaryFeatures;
 
 class EntityFeatures : public SequenceFeatures {
 public:

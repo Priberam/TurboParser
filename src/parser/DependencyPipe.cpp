@@ -385,7 +385,9 @@ void DependencyPipe::EnforceConnectedGraph(Instance *instance,
     if (nodes_to_explore.empty()) {
       for (int m = 1; m < sentence->size(); ++m) {
         if (!visited[m]) {
+#ifndef NDEBUG
           LOG(INFO) << "Inserted root node 0 -> " << m << ".";
+#endif
           inserted_root_nodes->push_back(m);
           nodes_to_explore.push(m);
           break;
