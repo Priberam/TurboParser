@@ -18,6 +18,46 @@
 
 #include "DependencyPart.h"
 
+void DependencyParts::DeleteAPart(Part ** pointer_to_partpointer) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+  Part * part = (*pointer_to_partpointer);
+  if (part->type() == DEPENDENCYPART_ARC) {
+    DependencyPartArc * spu = static_cast<DependencyPartArc *>(part);
+    spu->DependencyPartArc::~DependencyPartArc();
+  } else if (part->type() == DEPENDENCYPART_LABELEDARC) {
+    DependencyPartLabeledArc * spb = static_cast<DependencyPartLabeledArc *>(part);
+    spb->DependencyPartLabeledArc::~DependencyPartLabeledArc();
+  } else if (part->type() == DEPENDENCYPART_SIBL) {
+    DependencyPartSibl * spt = static_cast<DependencyPartSibl *>(part);
+    spt->DependencyPartSibl::~DependencyPartSibl();
+  } else if (part->type() == DEPENDENCYPART_NEXTSIBL) {
+    DependencyPartNextSibl * spt = static_cast<DependencyPartNextSibl *>(part);
+    spt->DependencyPartNextSibl::~DependencyPartNextSibl();
+  } else if (part->type() == DEPENDENCYPART_GRANDPAR) {
+    DependencyPartGrandpar * spt = static_cast<DependencyPartGrandpar *>(part);
+    spt->DependencyPartGrandpar::~DependencyPartGrandpar();
+  } else if (part->type() == DEPENDENCYPART_GRANDSIBL) {
+    DependencyPartGrandSibl * spt = static_cast<DependencyPartGrandSibl *>(part);
+    spt->DependencyPartGrandSibl::~DependencyPartGrandSibl();
+  } else if (part->type() == DEPENDENCYPART_TRISIBL) {
+    DependencyPartTriSibl * spt = static_cast<DependencyPartTriSibl *>(part);
+    spt->DependencyPartTriSibl::~DependencyPartTriSibl();
+  } else if (part->type() == DEPENDENCYPART_NONPROJ) {
+    DependencyPartNonproj * spt = static_cast<DependencyPartNonproj *>(part);
+    spt->DependencyPartNonproj::~DependencyPartNonproj();
+  } else if (part->type() == DEPENDENCYPART_PATH) {
+    DependencyPartPath * spt = static_cast<DependencyPartPath *>(part);
+    spt->DependencyPartPath::~DependencyPartPath();
+  } else if (part->type() == DEPENDENCYPART_HEADBIGRAM) {
+    DependencyPartHeadBigram * spt = static_cast<DependencyPartHeadBigram *>(part);
+    spt->DependencyPartHeadBigram::~DependencyPartHeadBigram();
+  }
+#else
+  delete (*pointer_to_partpointer);
+#endif
+  *pointer_to_partpointer = NULL;
+}
+
 void DependencyParts::DeleteAll() {
   for (int i = 0; i < NUM_DEPENDENCYPARTS; ++i) {
     offsets_[i] = -1;
@@ -27,12 +67,26 @@ void DependencyParts::DeleteAll() {
 
   for (iterator iter = begin(); iter != end(); iter++) {
     if ((*iter) != NULL) {
-      delete (*iter);
-      *iter = NULL;
+      DeleteAPart(&(*iter));
     }
   }
 
   clear();
+
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+  for (int i = 0; i < NUM_DEPENDENCYPARTS; ++i) {
+    arc_pool_.Cleanup();
+    labeledarc_pool_.Cleanup();
+    sibl_pool_.Cleanup();
+    nextsibl_pool_.Cleanup();
+    grandpar_pool_.Cleanup();
+    grand_sibl_pool_.Cleanup();
+    trisibl_pool_.Cleanup();
+    nonproj_pool_.Cleanup();
+    path_pool_.Cleanup();
+    headbigram_pool_.Cleanup();
+  }
+#endif
 }
 
 void DependencyParts::DeleteIndices() {

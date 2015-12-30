@@ -23,6 +23,12 @@
 #include <vector>
 #include "Part.h"
 
+#define USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS 1
+
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+#include "MemPool.h"
+#endif
+
 using namespace std;
 
 enum {
@@ -403,7 +409,20 @@ private:
 
 class DependencyParts : public Parts {
 public:
-  DependencyParts() {};
+  DependencyParts()
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    : arc_pool_(),
+    labeledarc_pool_(),
+    sibl_pool_(),
+    nextsibl_pool_(),
+    grandpar_pool_(),
+    grand_sibl_pool_(),
+    trisibl_pool_(),
+    nonproj_pool_(),
+    path_pool_(),
+    headbigram_pool_()
+#endif
+  {};
   virtual ~DependencyParts() { DeleteAll(); };
 
   void Initialize() {
@@ -414,34 +433,124 @@ public:
   }
 
   Part *CreatePartArc(int head, int modifier) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartArc * get_allocated_part = (DependencyPartArc *)arc_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartArc(head, modifier);
+    //get_allocated_part->DependencyPartArc::DependencyPartArc(head, modifier);
+    //return get_allocated_part;
+#else
     return new DependencyPartArc(head, modifier);
+#endif
   }
   Part *CreatePartLabeledArc(int head, int modifier, int label) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartLabeledArc * get_allocated_part = (DependencyPartLabeledArc *)labeledarc_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartLabeledArc(head, modifier, label);
+    //get_allocated_part->DependencyPartLabeledArc::DependencyPartLabeledArc(head, modifier, label);
+    //return get_allocated_part;
+#else
     return new DependencyPartLabeledArc(head, modifier, label);
+#endif
   }
   Part *CreatePartSibl(int head, int modifier, int sibling) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartSibl * get_allocated_part = (DependencyPartSibl *)sibl_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartSibl(head, modifier, sibling);
+    //get_allocated_part->DependencyPartSibl::DependencyPartSibl(head, modifier, sibling);
+    //return get_allocated_part;
+#else
     return new DependencyPartSibl(head, modifier, sibling);
+#endif
   }
   Part *CreatePartNextSibl(int head, int modifier, int sibling) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartNextSibl * get_allocated_part = (DependencyPartNextSibl *)nextsibl_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartNextSibl(head, modifier, sibling);
+    //get_allocated_part->DependencyPartNextSibl::DependencyPartNextSibl(head, modifier, sibling);
+    //return get_allocated_part;
+#else
     return new DependencyPartNextSibl(head, modifier, sibling);
+#endif
   }
   Part *CreatePartGrandpar(int grandparent, int head, int modifier) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartGrandpar * get_allocated_part = (DependencyPartGrandpar *)grandpar_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartGrandpar(grandparent, head, modifier);
+    //get_allocated_part->DependencyPartGrandpar::DependencyPartGrandpar(grandparent, head, modifier);
+    //return get_allocated_part;
+#else
     return new DependencyPartGrandpar(grandparent, head, modifier);
+#endif
   }
   Part *CreatePartGrandSibl(int grandparent, int head, int modifier, int sibling) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartGrandSibl * get_allocated_part = (DependencyPartGrandSibl *)grand_sibl_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartGrandSibl(grandparent, head, modifier, sibling);
+    //get_allocated_part->DependencyPartGrandSibl::DependencyPartGrandSibl(grandparent, head, modifier, sibling);
+    //return get_allocated_part;
+#else
     return new DependencyPartGrandSibl(grandparent, head, modifier, sibling);
+#endif
   }
   Part *CreatePartTriSibl(int head, int modifier, int sibling, int other_sibling) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartTriSibl * get_allocated_part = (DependencyPartTriSibl *)trisibl_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartTriSibl(head, modifier, sibling, other_sibling);
+    //get_allocated_part->DependencyPartTriSibl::Dependency(head, modifier, sibling, other_sibling);
+    //return get_allocated_part;
+#else
     return new DependencyPartTriSibl(head, modifier, sibling, other_sibling);
+#endif
   }
   Part *CreatePartNonproj(int head, int modifier) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartNonproj * get_allocated_part = (DependencyPartNonproj *)nonproj_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartNonproj(head, modifier);
+    //get_allocated_part->DependencyPartNonproj::DependencyPartNonproj(head, modifier);
+    //return get_allocated_part;
+#else
     return new DependencyPartNonproj(head, modifier);
+#endif
   }
   Part *CreatePartPath(int ancestor, int descendant) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartPath * get_allocated_part = (DependencyPartPath *)path_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartPath(ancestor, descendant);
+    //get_allocated_part->DependencyPartPath::DependencyPartPath(ancestor, descendant);
+    //return get_allocated_part;
+#else
     return new DependencyPartPath(ancestor, descendant);
+#endif
   }
   Part *CreatePartHeadBigram(int head, int modifier, int previous_head) {
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+    // First, raw memory is requested from the memory pool
+    DependencyPartHeadBigram * get_allocated_part = (DependencyPartHeadBigram *)headbigram_pool_.GetNextBuffer();
+    //Once that memory is granted, the new object is constructed in it, with a "placement new"
+    return new (get_allocated_part) DependencyPartHeadBigram(head, modifier, previous_head);
+    //get_allocated_part->DependencyPartHeadBigram::DependencyPartHeadBigram(head, modifier, previous_head);
+    //return get_allocated_part;
+#else
     return new DependencyPartHeadBigram(head, modifier, previous_head);
+#endif
   }
 
   void Save(FILE* fs) {
@@ -453,6 +562,7 @@ public:
 
 public:
   void DeleteAll();
+  void DeleteAPart(Part ** pointer_to_partpointer);
 
 public:
   void BuildIndices(int sentence_length, bool labeled);
@@ -567,6 +677,19 @@ private:
   vector<vector<int> >  index_;
   vector<vector<vector<int> > > index_labeled_;
   int offsets_[NUM_DEPENDENCYPARTS];
+
+#if USE_MEMORY_POOL_FOR_DEPENDENCY_PARTS == 1
+  MemPool<DependencyPartArc> arc_pool_;
+  MemPool<DependencyPartLabeledArc> labeledarc_pool_;
+  MemPool<DependencyPartSibl> sibl_pool_;
+  MemPool<DependencyPartNextSibl> nextsibl_pool_;
+  MemPool<DependencyPartGrandpar> grandpar_pool_;
+  MemPool<DependencyPartGrandSibl> grand_sibl_pool_;
+  MemPool<DependencyPartTriSibl> trisibl_pool_;
+  MemPool<DependencyPartNonproj> nonproj_pool_;
+  MemPool<DependencyPartPath> path_pool_;
+  MemPool<DependencyPartHeadBigram> headbigram_pool_;
+#endif
 };
 
 #endif /* DEPENDENCYPART_H_ */

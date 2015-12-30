@@ -1441,7 +1441,7 @@ void DependencyPipe::Prune(Instance *instance, Parts *parts,
       if (gold_outputs) (*gold_outputs)[r0] = (*gold_outputs)[r];
       ++r0;
     } else {
-      delete (*parts)[r];
+      dependency_parts->DeleteAPart(&((*parts)[r]));
     }
   }
 
