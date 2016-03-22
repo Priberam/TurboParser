@@ -27,7 +27,7 @@ libturboparser.a : $(OBJS)
 libturboparser.so : $(OBJS)
 	$(CC) -o libturboparser.so $(OBJS) $(LDFLAGS) $(LFLAGS)
 
-TurboParserInterface.o: TurboParserInterface.h TurboParserInterface.cpp $(TAGGER)/TaggerPipe.h $(ENTITYRECOGNIZER)/EntityPipe.h $(PARSER)/DependencyPipe.h $(SEMANTICPARSER)/SemanticPipe.h $(COREFERENCERESOLVER)/CoreferencePipe.h $(MORPHOLOGICALTAGGER)/MorphologicalTaggerPipe.h $(UTIL)/Utils.h
+TurboParserInterface.o: TurboParserInterface.h TurboParserInterface.cpp $(TAGGER)/TaggerPipe.h $(ENTITYRECOGNIZER)/EntityPipe.h $(PARSER)/DependencyPipe.h $(SEMANTICPARSER)/SemanticPipe.h $(COREFERENCERESOLVER)/CoreferencePipe.h $(MORPHOLOGICALTAGGER)/MorphologicalPipe.h $(UTIL)/Utils.h
 	$(CC) $(CFLAGS) TurboParserInterface.cpp
 
 #####################
@@ -162,7 +162,7 @@ MorphologicalInstance.o: $(MORPHOLOGICALTAGGER)/MorphologicalInstance.h $(MORPHO
 
 MorphologicalInstanceNumeric.o: $(MORPHOLOGICALTAGGER)/MorphologicalInstanceNumeric.h $(MORPHOLOGICALTAGGER)/MorphologicalInstanceNumeric.cpp $(MORPHOLOGICALTAGGER)/MorphologicalInstance.h $(SEQUENCE)/SequenceInstanceNumeric.h $(MORPHOLOGICALTAGGER)/MorphologicalDictionary.h
 	$(CC) $(CFLAGS) $(MORPHOLOGICALTAGGER)/MorphologicalInstanceNumeric.cpp
-
+    
 MorphologicalOptions.o: $(MORPHOLOGICALTAGGER)/MorphologicalOptions.h $(MORPHOLOGICALTAGGER)/MorphologicalOptions.cpp $(UTIL)/SerializationUtils.h $(SEQUENCE)/SequenceOptions.h
 	$(CC) $(CFLAGS) $(MORPHOLOGICALTAGGER)/MorphologicalOptions.cpp
 
@@ -252,9 +252,6 @@ Pipe.o: $(CLASSIFIER)/Pipe.h $(CLASSIFIER)/Pipe.cpp $(CLASSIFIER)/Dictionary.h $
 
 Reader.o: $(CLASSIFIER)/Reader.h $(CLASSIFIER)/Reader.cpp $(CLASSIFIER)/Instance.h $(UTIL)/Utils.h
 	$(CC) $(CFLAGS) $(CLASSIFIER)/Reader.cpp
-
-SparseParameterVector.o: $(CLASSIFIER)/SparseParameterVector.h $(CLASSIFIER)/SparseParameterVector.cpp $ $(UTIL)/SerializationUtils.h
-	$(CC) $(CFLAGS) $(CLASSIFIER)/SparseParameterVector.cpp
 
 Writer.o: $(CLASSIFIER)/Writer.h $(CLASSIFIER)/Writer.cpp $(CLASSIFIER)/Instance.h $(UTIL)/Utils.h
 	$(CC) $(CFLAGS) $(CLASSIFIER)/Writer.cpp
