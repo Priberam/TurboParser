@@ -54,7 +54,7 @@ void DependencyInstanceNumeric::Initialize(
     std::string form = instance->GetForm(i);
     std::string form_lower(form);
     std::transform(form_lower.begin(), form_lower.end(), form_lower.begin(),
-                   ::tolower);
+              ::tolower);
     if (!form_case_sensitive) form = form_lower;
     id = token_dictionary->GetFormId(form);
     CHECK_LT(id, 0xffff);

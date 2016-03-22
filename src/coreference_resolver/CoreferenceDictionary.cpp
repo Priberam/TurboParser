@@ -419,7 +419,7 @@ void CoreferenceDictionary::CreateWordDictionaries(
       std::string form = instance->GetForm(i);
       std::string form_lower(form);
       std::transform(form_lower.begin(), form_lower.end(), form_lower.begin(),
-                     ::tolower);
+                ::tolower);
       id = word_alphabet_.Insert(form);
       if (id >= word_freqs.size()) {
         CHECK_EQ(id, word_freqs.size());
@@ -561,7 +561,7 @@ void CoreferenceDictionary::ReadGenderNumberStatistics() {
           const std::string &word = words[i];
           std::string word_lower(word);
           std::transform(word_lower.begin(), word_lower.end(), word_lower.begin(),
-                         ::tolower);
+                    ::tolower);
 
           int word_id = word_alphabet_.Insert(word);
 
@@ -626,7 +626,7 @@ void CoreferenceDictionary::ReadPronouns() {
         const std::string code_flags = fields[1];
         std::string form_lower(form);
         std::transform(form_lower.begin(), form_lower.end(), form_lower.begin(),
-                       ::tolower);
+                  ::tolower);
         int id = token_dictionary_->GetFormLowerId(form_lower);
         CHECK_LT(id, 0xffff);
         if (id < 0) {
@@ -674,7 +674,7 @@ void CoreferenceDictionary::ReadPronouns() {
         const std::string code_flags = fields[1];
         std::string word_lower(word);
         std::transform(word_lower.begin(), word_lower.end(), word_lower.begin(),
-                       ::tolower);
+                  ::tolower);
         int id = word_lower_alphabet_.Lookup(word_lower);
         if (id < 0) {
           LOG(INFO) << "Adding unknown pronoun: "
@@ -734,7 +734,7 @@ void CoreferenceDictionary::ReadDeterminers() {
         const std::string code_flags = fields[1];
         std::string word_lower(word);
         std::transform(word_lower.begin(), word_lower.end(), word_lower.begin(),
-                       ::tolower);
+                  ::tolower);
         int id = word_lower_alphabet_.Lookup(word_lower);
         if (id < 0) {
           LOG(INFO) << "Adding unknown determiner: "

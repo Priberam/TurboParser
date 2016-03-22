@@ -126,7 +126,7 @@ void MorphologicalTokenDictionary::Initialize(MorphologicalReader *reader) {
       int form_length = static_cast<int>(form.length());
       std::string form_lower(form);
       std::transform(form_lower.begin(), form_lower.end(),
-                     form_lower.begin(), ::tolower);
+                form_lower.begin(), ::tolower);
       if (!form_case_sensitive) form = form_lower;
       id = form_alphabet.Insert(form);
       if (id >= form_freqs.size()) {
